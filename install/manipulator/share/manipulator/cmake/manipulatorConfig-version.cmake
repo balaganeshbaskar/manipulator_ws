@@ -1,0 +1,1 @@
+/home/bgb_6342/manipulator_ws/build/manipulator/ament_cmake_core/manipulatorConfig-version.cmake
