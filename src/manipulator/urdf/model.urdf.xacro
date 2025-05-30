@@ -3,11 +3,22 @@
 
     <xacro:include filename="inertial_macros.xacro"/>
 
+    <!-- <gazebo>
+        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+            <parameters>/home/bgb_6342/manipulator_ws/src/manipulator/config/ros2_controllers.yaml</parameters>
+        </plugin>
+    </gazebo> -->
+
+    <!-- <gazebo>
+        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so"/>
+    </gazebo> -->
+
     <gazebo>
         <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
             <parameters>/home/bgb_6342/manipulator_ws/src/manipulator/config/ros2_controllers.yaml</parameters>
         </plugin>
     </gazebo>
+
 
     <!-- COLOR DEFINITIONS -->
     <material name="blue">
