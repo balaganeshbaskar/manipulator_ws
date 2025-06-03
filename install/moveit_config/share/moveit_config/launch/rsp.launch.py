@@ -1,0 +1,1 @@
+/home/bgb_6342/manipulator_ws/src/moveit_config/launch/rsp.launch.py

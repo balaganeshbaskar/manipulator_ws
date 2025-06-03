@@ -1,0 +1,52 @@
+[0.021s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/bgb_6342/manipulator_ws/src/manipulator -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/bgb_6342/manipulator_ws/install/manipulator
+[0.156s] -- The C compiler identification is GNU 11.4.0
+[0.581s] -- The CXX compiler identification is GNU 11.4.0
+[0.827s] -- Detecting C compiler ABI info
+[1.010s] -- Detecting C compiler ABI info - done
+[1.020s] -- Check for working C compiler: /usr/bin/cc - skipped
+[1.021s] -- Detecting C compile features
+[1.021s] -- Detecting C compile features - done
+[1.025s] -- Detecting CXX compiler ABI info
+[1.217s] -- Detecting CXX compiler ABI info - done
+[1.226s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.227s] -- Detecting CXX compile features
+[1.229s] -- Detecting CXX compile features - done
+[1.231s] -- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)
+[1.445s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.540s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.582s] -- Found ament_lint_auto: 0.12.12 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[1.693s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.695s] -- Added test 'lint_cmake' to check CMake code style
+[1.696s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.698s] -- Added test 'xmllint' to check XML markup files
+[1.700s] -- Configuring done
+[1.708s] -- Generating done
+[1.711s] -- Build files have been written to: /home/bgb_6342/manipulator_ws/build/manipulator
+[1.720s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /home/bgb_6342/manipulator_ws/src/manipulator -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/bgb_6342/manipulator_ws/install/manipulator
+[1.724s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/manipulator -- -j4 -l4
+[1.779s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/manipulator -- -j4 -l4
+[1.794s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/manipulator
+[1.802s] -- Install configuration: ""
+[1.803s] -- Execute custom install script
+[1.805s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/launch/display.launch.py
+[1.820s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/launch/launch_sim.launch.py
+[1.834s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/urdf/inertial_macros.xacro
+[1.846s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/urdf/model.urdf
+[1.861s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/urdf/model.urdf.xacro
+[1.878s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/config/ros2_controllers.yaml
+[1.890s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/ament_index/resource_index/package_run_dependencies/manipulator
+[1.902s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/ament_index/resource_index/parent_prefix_path/manipulator
+[1.917s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/environment/ament_prefix_path.sh
+[1.931s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/environment/ament_prefix_path.dsv
+[1.944s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/environment/path.sh
+[1.956s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/environment/path.dsv
+[1.969s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/local_setup.bash
+[1.983s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/local_setup.sh
+[1.995s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/local_setup.zsh
+[2.007s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/local_setup.dsv
+[2.022s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.dsv
+[2.036s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/ament_index/resource_index/packages/manipulator
+[2.048s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/cmake/manipulatorConfig.cmake
+[2.061s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/cmake/manipulatorConfig-version.cmake
+[2.072s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.xml
+[2.087s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/manipulator

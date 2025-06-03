@@ -1,0 +1,1 @@
+/home/bgb_6342/manipulator_ws/build/moveit_config/ament_cmake_environment_hooks/local_setup.zsh

@@ -1,17 +1,7 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="5dof_robot_manipulator">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="five_dof_robot_manipulator">
 
     <xacro:include filename="inertial_macros.xacro"/>
-
-    <!-- <gazebo>
-        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-            <parameters>/home/bgb_6342/manipulator_ws/src/manipulator/config/ros2_controllers.yaml</parameters>
-        </plugin>
-    </gazebo> -->
-
-    <!-- <gazebo>
-        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so"/>
-    </gazebo> -->
 
     <gazebo>
         <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
@@ -248,7 +238,8 @@
 
     <ros2_control name="GazeboSystem" type="system">
         <hardware>
-            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+            <!-- <plugin>gazebo_ros2_control/GazeboSystem</plugin> -->
+            <plugin>fake_components/GenericSystem</plugin>
         </hardware>
         <joint name="joint_1">
                 <command_interface name="position"/>

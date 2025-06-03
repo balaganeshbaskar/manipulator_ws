@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="five_dof_robot_manipulator">
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+
+    <!-- Import five_dof_robot_manipulator urdf file -->
+    <xacro:include filename="$(find manipulator)/urdf/model.urdf.xacro" />
+
+    <!-- Import control_xacro -->
+    <xacro:include filename="five_dof_robot_manipulator.ros2_control.xacro" />
+
+
+    <xacro:five_dof_robot_manipulator_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+
+</robot>

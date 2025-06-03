@@ -1,0 +1,1 @@
+/home/bgb_6342/manipulator_ws/src/moveit_config/launch/warehouse_db.launch.py

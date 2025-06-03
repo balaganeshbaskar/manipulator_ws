@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: manipulator
+    relative_path: urdf/model.urdf.xacro
+  srdf:
+    relative_path: config/five_dof_robot_manipulator.srdf
+  package_settings:
+    author_name: balaganesh
+    author_email: balaganeshbaskar@gmail.com
+    generated_timestamp: 1748602874
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity

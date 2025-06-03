@@ -1,0 +1,1 @@
+/home/bgb_6342/manipulator_ws/src/moveit_config/launch/static_virtual_joint_tfs.launch.py
