@@ -32,6 +32,12 @@ ros2 launch <package_name> <launch_file_name.py>
 ros2 launch moveit_config demo.launch.py  
 
 
+3. Launch - For RPi to STM32 Uart coms
+ros2 launch stm32_interface_pkg uart.launch.py 
+
+(change simulation mode true or false from launch file)
+
+
 2. Sample trajectory command to move robot in gazebo:
 ros2 action send_goal /joint_trajectory_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {joint_names: ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5'], points: [{positions: [0.5, 0.5, 0.5, 0.5, 0.5], time_from_start: {sec: 2}}]}}"
 
