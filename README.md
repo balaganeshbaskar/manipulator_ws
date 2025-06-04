@@ -15,9 +15,22 @@ As the project progesses, other tutorials and help will be added here...
 
 QUICK CODES:
 
-1. Launch:
+1. Launch (For launching Gazebo):
+[Remember to switch xacro files to gazebo_ros2_control/GazeboSystem]
+
+
 ros2 launch <package_name> <launch_file_name.py>
+
 ros2 launch manipulator launch_sim.launch.py
+
+
+2. Launch (For launching Moveit):
+[Remember to switch xacro files to fake_components/GenericSystem]
+
+ros2 launch <package_name> <launch_file_name.py>
+
+ros2 launch moveit_config demo.launch.py  
+
 
 2. Sample trajectory command to move robot in gazebo:
 ros2 action send_goal /joint_trajectory_controller/follow_joint_trajectory control_msgs/action/FollowJointTrajectory "{trajectory: {joint_names: ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5'], points: [{positions: [0.5, 0.5, 0.5, 0.5, 0.5], time_from_start: {sec: 2}}]}}"
