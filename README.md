@@ -32,7 +32,8 @@ ros2 launch <package_name> <launch_file_name.py>
 ros2 launch moveit_config demo.launch.py  
 
 
-3. Launch - For RPi to STM32 Uart coms
+3. Launch - For RPi to STM32 Uart coms  
+
 ros2 launch stm32_interface_pkg uart.launch.py 
 
 (change simulation mode true or false from launch file)
