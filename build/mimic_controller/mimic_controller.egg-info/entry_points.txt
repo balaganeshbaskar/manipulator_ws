@@ -1,0 +1,4 @@
+[console_scripts]
+mimic_publisher = mimic_controller.mimic_input_publisher:main
+mimic_to_moveit = mimic_controller.mimic_to_moveit_action:main
+

@@ -1,0 +1,1 @@
+/home/bgb_6342/manipulator_ws/build/mimic_controller/launch/mimic.launch.py

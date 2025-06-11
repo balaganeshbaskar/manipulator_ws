@@ -1,0 +1,15 @@
+package.xml
+setup.cfg
+setup.py
+launch/mimic.launch.py
+mimic_controller/__init__.py
+mimic_controller/mimic_input_publisher.py
+mimic_controller/mimic_to_moveit_action.py
+mimic_controller.egg-info/PKG-INFO
+mimic_controller.egg-info/SOURCES.txt
+mimic_controller.egg-info/dependency_links.txt
+mimic_controller.egg-info/entry_points.txt
+mimic_controller.egg-info/requires.txt
+mimic_controller.egg-info/top_level.txt
+mimic_controller.egg-info/zip-safe
+resource/mimic_controller
