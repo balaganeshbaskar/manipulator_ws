@@ -1,0 +1,1 @@
+/home/bgb_6342/manipulator_ws/src/stm32_interface_pkg/setup.py

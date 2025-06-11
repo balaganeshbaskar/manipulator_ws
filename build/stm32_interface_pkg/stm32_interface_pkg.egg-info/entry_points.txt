@@ -1,0 +1,3 @@
+[console_scripts]
+stm32_uart_node = stm32_interface_pkg.stm32_uart_node:main
+
