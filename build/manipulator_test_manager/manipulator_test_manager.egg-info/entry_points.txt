@@ -1,0 +1,3 @@
+[console_scripts]
+test_manager_node = manipulator_test_manager.test_manager_node:main
+

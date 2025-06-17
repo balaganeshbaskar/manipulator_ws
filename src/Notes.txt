@@ -1,5 +1,9 @@
 Current Project launching files:
 
-1. ros2 launch moveit_config demo.launch.py   - to visualize robotic arm moving in moveit
-2. ros2 launch stm32_interface_pkg uart.launch.py - to convert joint angles to message format (Output)
-3. ros2 launch mimic_controller mimic.launch.py - to give input to moveit through code (Input)
+1. ros2 launch moveit_config demo.launch.py              - to visualize robotic arm moving in moveit
+
+2. ros2 launch stm32_interface_pkg uart.launch.py        - to convert joint angles to message format (Output)
+
+3. ros2 launch mimic_controller mimic.launch.py          - to give input to moveit through code (Input)
+                            
+4. ros2 run manipulator_test_manager test_manager_node   - Test Node for latency

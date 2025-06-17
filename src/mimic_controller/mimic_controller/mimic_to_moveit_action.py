@@ -21,7 +21,7 @@ class MimicActionClient(Node):
             self.listener_callback,
             10
         )
-
+        
     def listener_callback(self, msg):
         # Compute latency
         received_time = self.get_clock().now().nanoseconds
