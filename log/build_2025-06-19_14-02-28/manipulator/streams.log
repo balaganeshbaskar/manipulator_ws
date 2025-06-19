@@ -1,0 +1,29 @@
+[0.156s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/manipulator -- -j4 -l4
+[1.782s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/manipulator -- -j4 -l4
+[1.800s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/manipulator
+[1.851s] -- Install configuration: ""
+[1.890s] -- Execute custom install script
+[1.903s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/launch/display.launch.py
+[1.906s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/launch/launch_sim.launch.py
+[1.920s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/urdf/inertial_macros.xacro
+[1.921s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/urdf/minimal_test.urdf
+[1.923s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/urdf/model.urdf
+[1.936s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/urdf/model.urdf.xacro
+[1.941s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/config/output.log
+[1.944s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/config/ros2_controllers.yaml
+[1.951s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/ament_index/resource_index/package_run_dependencies/manipulator
+[1.974s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/ament_index/resource_index/parent_prefix_path/manipulator
+[1.991s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/environment/ament_prefix_path.sh
+[1.999s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/environment/ament_prefix_path.dsv
+[2.000s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/environment/path.sh
+[2.004s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/environment/path.dsv
+[2.006s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/local_setup.bash
+[2.007s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/local_setup.sh
+[2.008s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/local_setup.zsh
+[2.009s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/local_setup.dsv
+[2.010s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.dsv
+[2.059s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/ament_index/resource_index/packages/manipulator
+[2.062s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/cmake/manipulatorConfig.cmake
+[2.064s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/cmake/manipulatorConfig-version.cmake
+[2.065s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.xml
+[2.077s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/manipulator

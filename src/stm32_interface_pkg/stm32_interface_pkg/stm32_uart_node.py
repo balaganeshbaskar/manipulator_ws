@@ -1,11 +1,11 @@
 import rclpy
 from rclpy.node import Node
 import serial
-from std_msgs.msg import Float64MultiArray
-from std_msgs.msg import Float32
-from sensor_msgs.msg import JointState
 import struct
-from control_msgs.msg import JointTrajectoryControllerState  # ✅ Import MoveIt controller state
+from std_msgs.msg import Float64MultiArray, Float32
+from sensor_msgs.msg import JointState
+from control_msgs.msg import JointTrajectoryControllerState
+from rclpy.time import Time
 
 STX = 0x02
 ETX = 0x03
@@ -21,16 +21,8 @@ class STM32UARTNode(Node):
             self.get_logger().info('Simulation mode enabled — not using serial port')
 
         self.publisher_ = self.create_publisher(Float64MultiArray, '/stm32_rx_joints', 10)
-        self.latency_pub = self.create_publisher(Float32, '/test_output_latency', 10)
-        self.feedback_pub = self.create_publisher(JointState, '/test_output_feedback', 10)
-        self.tx_latency_pub = self.create_publisher(Float32, '/test_tx_latency', 10)
-
-        self.subscription = self.create_subscription(
-            Float64MultiArray,
-            '/stm32_tx_joints',
-            self.send_to_stm32,
-            10
-        )
+        self.moveit_stm32_latency_pub = self.create_publisher(Float32, '/moveit_stm32_time', 10)
+        self.stm32_output_latency_pub = self.create_publisher(Float32, '/stm32_output_time', 10)
 
         self.trajectory_state_sub = self.create_subscription(
             JointTrajectoryControllerState,
@@ -46,7 +38,16 @@ class STM32UARTNode(Node):
         return sum(data) & 0xFF
 
     def send_to_stm32(self, msg: Float64MultiArray):
-        timestamp_sent = self.get_clock().now()
+        now = self.get_clock().now()
+        self.last_sent_time = now
+
+        # Publish latency from MoveIt to STM32 send time
+        if hasattr(self, 'moveit_input_time'):
+            moveit_latency = (now.nanoseconds - self.moveit_input_time.nanoseconds) / 1e6
+            latency_msg = Float32()
+            latency_msg.data = moveit_latency
+            self.moveit_stm32_latency_pub.publish(latency_msg)
+            del self.moveit_input_time  # reset after using
 
         data = b''
         for value in msg.data:
@@ -57,20 +58,10 @@ class STM32UARTNode(Node):
         message = bytes([STX]) + payload + bytes([checksum, ETX])
 
         if self.simulate:
-            self.get_logger().info(f'Simulated  >> TX (no serial): {message.hex()}')
+            self.get_logger().info(f'Simulated >> TX (no serial): {message.hex()}')
         else:
             self.serial_port.write(message)
             self.get_logger().info(f'>> TX: {message.hex()}')
-
-        # Record sent timestamp for round-trip latency measurement
-        self.last_sent_time = timestamp_sent
-
-        # Publish TX latency (from message in to message encoded and sent)
-        now = self.get_clock().now()
-        tx_latency = (now.nanoseconds - timestamp_sent.nanoseconds) / 1e6  # in ms
-        tx_msg = Float32()
-        tx_msg.data = tx_latency
-        self.tx_latency_pub.publish(tx_msg)
 
     def read_from_stm32(self):
         if self.serial_port.in_waiting:
@@ -100,18 +91,14 @@ class STM32UARTNode(Node):
             msg.data = joint_values
             self.publisher_.publish(msg)
 
-            js = JointState()
-            js.header.stamp = self.get_clock().now().to_msg()
-            js.name = [f'joint_{i+1}' for i in range(len(joint_values))]
-            js.position = joint_values
-            self.feedback_pub.publish(js)
-
+            # Publish round-trip latency
             if hasattr(self, 'last_sent_time'):
                 now = self.get_clock().now()
-                latency = (now.nanoseconds - self.last_sent_time.nanoseconds) / 1e6
-                latency_msg = Float32()
-                latency_msg.data = latency
-                self.latency_pub.publish(latency_msg)
+                rtt_latency = (now.nanoseconds - self.last_sent_time.nanoseconds) / 1e6
+                rtt_msg = Float32()
+                rtt_msg.data = rtt_latency
+                self.stm32_output_latency_pub.publish(rtt_msg)
+                del self.last_sent_time
 
             self.get_logger().info(f'<< RX joints: {joint_values}')
 
@@ -122,6 +109,8 @@ class STM32UARTNode(Node):
         joint_positions = list(msg.actual.positions[:5])
 
         if not hasattr(self, 'last_sent') or self._position_changed(joint_positions):
+            self.moveit_input_time = self.get_clock().now()
+
             float_msg = Float64MultiArray()
             float_msg.data = joint_positions
             self.send_to_stm32(float_msg)
@@ -135,25 +124,18 @@ class STM32UARTNode(Node):
                 return True
         return False
 
-
 def main(args=None):
     rclpy.init(args=args)
-    node = STM32UARTNode(simulate=True)  # use simulate=False when ready
+    node = STM32UARTNode(simulate=True)  # set simulate=False for real hardware
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info('Shutting down')
+        node.get_logger().info('Shutting down STM32 UART node')
     finally:
         if not node.simulate:
             node.serial_port.close()
         node.destroy_node()
         rclpy.shutdown()
-
-
-
-
-
-
 
 
 
