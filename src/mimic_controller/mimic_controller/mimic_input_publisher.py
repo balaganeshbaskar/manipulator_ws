@@ -2,44 +2,41 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-from std_msgs.msg import Bool
 import math
 
 class MimicPublisher(Node):
     def __init__(self):
         super().__init__('mimic_publisher')
         self.joint_names = [f'joint_{i}' for i in range(1, 6)]
-        self.test_mode = False
         self.step = 0
 
+        # Publisher for /mimic_joint_states
         self.pub = self.create_publisher(JointState, '/mimic_joint_states', 10)
+
+        # Subscriber to external joint test inputs - INPUT CONTROLLER SHOULD PUBLISH TO THIS
         self.sub = self.create_subscription(JointState, '/joint_test_input', self.test_input_callback, 10)
-        self.mode_sub = self.create_subscription(Bool, '/test_mode_on', self.mode_callback, 10)
-        self.timer = self.create_timer(0.1, self.publish_if_not_test)
 
-    def mode_callback(self, msg: Bool):
-        self.test_mode = msg.data
-        mode_str = "TEST MODE ON" if self.test_mode else "NORMAL MODE"
-        self.get_logger().info(f"[mimic_input_publisher] {mode_str}")
+        # Timer for generating sine-based motion
+        self.timer = self.create_timer(0.1, self.publish_sine_wave)
 
-    def publish_if_not_test(self):
-        if not self.test_mode:
-            msg = JointState()
-            msg.header.stamp = self.get_clock().now().to_msg()
-            msg.name = self.joint_names
-            msg.position = [
-                math.sin(self.step / 10.0),
-                math.sin(self.step / 12.0),
-                math.sin(self.step / 15.0),
-                math.sin(self.step / 8.0),
-                math.sin(self.step / 18.0)
-            ]
-            self.pub.publish(msg)
-            self.step += 1
+    def publish_sine_wave(self):
+        msg = JointState()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.name = self.joint_names
+        msg.position = [
+            math.sin(self.step / 10.0),
+            math.sin(self.step / 12.0),
+            math.sin(self.step / 15.0),
+            math.sin(self.step / 8.0),
+            math.sin(self.step / 18.0)
+        ]
+        self.pub.publish(msg)
+        self.step += 1
 
     def test_input_callback(self, msg: JointState):
-        if self.test_mode:
-            self.pub.publish(msg)
+        # Re-publish with updated timestamp for latency tracking
+        msg.header.stamp = self.get_clock().now().to_msg()
+        self.pub.publish(msg)
 
 def main(args=None):
     rclpy.init(args=args)
@@ -51,7 +48,6 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
-
 
 
 

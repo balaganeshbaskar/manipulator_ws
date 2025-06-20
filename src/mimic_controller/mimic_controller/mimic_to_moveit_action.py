@@ -37,7 +37,7 @@ class MimicActionClient(Node):
         latency_msg.data = float(latency_ms)
         self.latency_pub.publish(latency_msg)
 
-        self.get_logger().info(f'[LATENCY] Input → MoveIt: {latency_ms:.2f} ms')
+        # self.get_logger().info(f'[LATENCY] Input → MoveIt: {latency_ms:.2f} ms')
 
         # Check if action server is ready
         if not self._action_client.server_is_ready():

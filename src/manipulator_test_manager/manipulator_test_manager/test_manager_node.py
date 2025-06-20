@@ -1,3 +1,17 @@
+########################################################################
+
+
+
+
+    # CURRENTLY IN HOLD! MAYBE WILL BE COMPLETED FINALLY!!!
+
+
+
+
+########################################################################
+
+
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray, Bool, Float32
