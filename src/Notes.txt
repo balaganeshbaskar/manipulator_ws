@@ -12,6 +12,7 @@ NORMAL EXECUTION ORDER:
 
 
 
+
 TESTING EXECUTION ORDER: (TEST MODE PAUSED FOR NOW!)
 
 1. ros2 run manipulator_test_manager test_manager_node   - Test Node for latency
