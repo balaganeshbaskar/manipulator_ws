@@ -3,7 +3,7 @@
 
 
 // Debug flag (1 = enable, 0 = disable)
-const uint8_t debugFlag = 1;
+const uint8_t debugFlag = 0;
 
 
 
@@ -26,7 +26,7 @@ enum State { WAIT_STX, READ_PACKET, CHECK_CRC };
 void setup() 
 {
   Serial.begin(115200);
-  rs485.begin(9600);  // Match
+  rs485.begin(38400);  // Match
   pinMode(RS485_DE_PIN, OUTPUT);
   digitalWrite(RS485_DE_PIN, LOW);  // Start in receive mode
 
@@ -76,7 +76,7 @@ void sendPoll()
   delay(1);
   digitalWrite(RS485_DE_PIN, LOW);
 
-  Serial.println("Poll sent to joint " + String(TARGET_JOINT_ID));
+  if (debugFlag) Serial.println("Poll sent to joint " + String(TARGET_JOINT_ID));
 }
 
 // New helper function to print parsed data in human-readable format
@@ -106,7 +106,7 @@ void printReceivingData(uint16_t motorAngle, uint16_t gearboxAngle, int16_t slip
 void receiveAndParseResponse() 
 {
 
-  Serial.println("RECEIVING DATA...");
+  if (debugFlag) Serial.println("RECEIVING DATA...");
 
   State state = WAIT_STX;
   uint8_t response[12];
