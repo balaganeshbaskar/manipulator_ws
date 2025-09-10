@@ -61,6 +61,7 @@ void printMonitoringData();
 void isrLimit1();
 void isrLimit2();
 bool isBusIdle(unsigned long threshold);
+bool debounceRead();
 
 void setup() {
   Serial.begin(115200);
@@ -172,14 +173,42 @@ void calculateSlippage() {
   slippage = gearboxAngle - expectedGearbox;
 }
 
+
 // Check limit switches (adjusted for NC: triggered when HIGH)
-void checkLimitSwitches() {
-  limitSwitch1 = digitalRead(LIMIT_SWITCH_PIN1);
-  limitSwitch2 = digitalRead(LIMIT_SWITCH_PIN2);
-  if (limitSwitch1 || limitSwitch2) {
-    emergencyFlag = true;
-    handleEmergency();
+void checkLimitSwitches() 
+{
+  bool debounced_limit1 = debounceRead(LIMIT_SWITCH_PIN1);
+  bool debounced_limit2 = debounceRead(LIMIT_SWITCH_PIN2);
+
+  // Update ISR flags to follow debounced physical state
+  limitSwitch1 = debounced_limit1;
+  limitSwitch2 = debounced_limit2;
+
+  if (debounced_limit1 || debounced_limit2)
+  {
+    if (debugFlag) Serial.println("Limit Switch Triggered!");
+    if (!emergencyFlag) {         // Call emergency handler only on state change
+      emergencyFlag = true;
+      handleEmergency();
+    }
   }
+  else
+  {
+    emergencyFlag = false;
+  }
+}
+
+
+
+bool debounceRead(uint8_t pin) {
+  static uint32_t lastChange = 0;
+  static bool lastState = LOW;
+  bool currentState = digitalRead(pin);
+  if (currentState != lastState && (millis() - lastChange) > 20) {
+    lastChange = millis();
+    lastState = currentState;
+  }
+  return lastState;
 }
 
 // Print monitoring data in single line
@@ -241,7 +270,7 @@ void sendData() {
   delay(1);
   rs485.write(message, 12);
   rs485.flush();
-  delay(20);
+  delay(1);
   digitalWrite(RS485_DE_PIN, LOW);
   Serial.println("DATA Sent.");
 }
@@ -287,7 +316,7 @@ void handleEmergency() {
     int retries = 0;
     while (retries < 3 && !isBusIdle(BUS_IDLE_THRESHOLD)) {
       retries++;
-      delay(10 * retries);  // Exponential backoff
+      delay(20);  // Exponential backoff
     }
     if (retries < 3) {
       digitalWrite(RS485_DE_PIN, HIGH);
@@ -295,7 +324,7 @@ void handleEmergency() {
       rs485.write(message, 12);
       rs485.flush();
       digitalWrite(RS485_DE_PIN, LOW);
-      delay(20);  // Longer gap so master can parse
+      delay(1);  // Longer gap so master can parse
     } else if (debugFlag) {
       Serial.println("Bus busy, emergency skipped on attempt " + String(attempt));
     }
