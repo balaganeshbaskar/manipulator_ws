@@ -1,3 +1,10 @@
+ROBOTIC ARM folder is for the Arduino Nano code backup
+
+REST OF THE FOLDERS FOR ROS2...
+
+
+
+
 
 This project is built using several tutorials.
 
