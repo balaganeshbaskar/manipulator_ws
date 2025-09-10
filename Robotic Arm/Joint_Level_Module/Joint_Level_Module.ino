@@ -63,7 +63,8 @@ void isrLimit2();
 bool isBusIdle(unsigned long threshold);
 bool debounceRead();
 
-void setup() {
+void setup() 
+{
   Serial.begin(115200);
   Serial.println("Joint " + String(JOINT_ID) + " initializing...");
 
@@ -90,7 +91,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(LIMIT_SWITCH_PIN1), isrLimit1, RISING);
   attachInterrupt(digitalPinToInterrupt(LIMIT_SWITCH_PIN2), isrLimit2, RISING);
 
-  rs485.begin(9600);
+  rs485.begin(38400);
   pinMode(RS485_DE_PIN, OUTPUT);
   digitalWrite(RS485_DE_PIN, LOW);
 
@@ -200,15 +201,19 @@ void checkLimitSwitches()
 
 
 
+// Declare arrays for debounce states for each limit switch pin
+uint32_t lastChangeTimes[2] = {0, 0};
+bool lastStates[2] = {LOW, LOW};
+
 bool debounceRead(uint8_t pin) {
-  static uint32_t lastChange = 0;
-  static bool lastState = LOW;
+  int index = (pin == LIMIT_SWITCH_PIN1) ? 0 : 1; // Map pin to index
+
   bool currentState = digitalRead(pin);
-  if (currentState != lastState && (millis() - lastChange) > 20) {
-    lastChange = millis();
-    lastState = currentState;
+  if (currentState != lastStates[index] && (millis() - lastChangeTimes[index]) > 20) {
+    lastChangeTimes[index] = millis();
+    lastStates[index] = currentState;
   }
-  return lastState;
+  return lastStates[index];
 }
 
 // Print monitoring data in single line
@@ -311,12 +316,12 @@ void handleEmergency() {
     Serial.println();
   }
 
-  // Transmit 5 times with bus idle check and retries
-  for (int attempt = 0; attempt < 5; attempt++) {
+  // Transmit 2 times with bus idle check and retries
+  for (int attempt = 0; attempt < 2; attempt++) {
     int retries = 0;
     while (retries < 3 && !isBusIdle(BUS_IDLE_THRESHOLD)) {
       retries++;
-      delay(20);  // Exponential backoff
+      delay(15);  // Exponential backoff
     }
     if (retries < 3) {
       digitalWrite(RS485_DE_PIN, HIGH);
@@ -330,8 +335,9 @@ void handleEmergency() {
     }
   }
 
-  Serial.println("Emergency triggered! Sent 5 times.");
+  Serial.println("Emergency triggered! Sent 2 times.");
   emergencyFlag = false;  // Reset
+
 }
 
 // Bus idle check
