@@ -3,7 +3,7 @@
 
 
 // Debug flag (1 = enable, 0 = disable)
-const uint8_t debugFlag = 0;
+const uint8_t debugFlag = 1;
 
 
 
@@ -15,7 +15,7 @@ const uint8_t RS485_DE_PIN = 10;
 SoftwareSerial rs485(RS485_RX_PIN, RS485_TX_PIN);
 
 const uint8_t TARGET_JOINT_ID = 1;
-const unsigned long POLL_INTERVAL = 1000;
+const unsigned long POLL_INTERVAL = 250;
 
 // CRC calculator
 CRC16 crc;
@@ -26,7 +26,7 @@ enum State { WAIT_STX, READ_PACKET, CHECK_CRC };
 void setup() 
 {
   Serial.begin(115200);
-  rs485.begin(9600);  // Match slave
+  rs485.begin(9600);  // Match
   pinMode(RS485_DE_PIN, OUTPUT);
   digitalWrite(RS485_DE_PIN, LOW);  // Start in receive mode
 
@@ -103,14 +103,15 @@ void printReceivingData(uint16_t motorAngle, uint16_t gearboxAngle, int16_t slip
 }
 
 // Receive with state machine
-void receiveAndParseResponse() {
+void receiveAndParseResponse() 
+{
 
   Serial.println("RECEIVING DATA...");
 
   State state = WAIT_STX;
   uint8_t response[12];
   uint8_t index = 0;
-  unsigned long timeout = millis() + 100;  // 100 ms timeout
+  unsigned long timeout = millis() + 200;  // 100 ms timeout
 
   while (millis() < timeout) 
   {
@@ -148,7 +149,8 @@ void receiveAndParseResponse() {
               Serial.print("recvCRC: "); Serial.println(recvCRC);
             }
 
-            if (calcCRC == recvCRC) {
+            if (calcCRC == recvCRC) 
+            {
               uint8_t id = response[1];
               uint8_t cmd = response[2];
               uint16_t motorAngle = (response[3] << 8) | response[4];
@@ -164,8 +166,12 @@ void receiveAndParseResponse() {
                 printReceivingData(motorAngle, gearboxAngle, slippage, limit1, limit2);
               }
 
-            } else {
+            } 
+            else 
+            {
               Serial.println("CRC mismatch.");
+              while (rs485.available()) rs485.read(); // Clear buffer to prevent delayed parsing
+              state = WAIT_STX; // Resync
             }
 
             return;  // Exit after processing
