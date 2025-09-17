@@ -55,6 +55,11 @@ bool lastStates[2] = {LOW, LOW};
 // System status
 bool systemReady = false;
 
+void printLiveData();
+void handleRS485Command();
+void sendLiveData();
+void readSensors();
+
 void setup() {
   wdt_disable(); // Disable watchdog during setup
   Serial.begin(115200);
@@ -98,7 +103,8 @@ void setup() {
   Serial.println("Initialization complete.");
 }
 
-void loop() {
+void loop() 
+{
   wdt_reset(); // Reset watchdog timer
 
   // Handle incoming RS485 commands
@@ -111,6 +117,7 @@ void loop() {
   if (millis() - lastUpdate > 50) {
     readSensors();
     lastUpdate = millis();
+    printLiveData();
   }
 
   // Simple communication timeout check
@@ -149,7 +156,9 @@ void handleRS485Command() {
       Serial.println("CRC mismatch");
     }
   }
+
 }
+
 
 void readSensors() {
   // Read encoders
@@ -219,4 +228,50 @@ void sendLiveData() {
   if (debugFlag) {
     Serial.println("Live data sent");
   }
+}
+
+void printLiveData() {
+  // Calculate slippage (assuming 50:1 gear ratio)
+  float expectedGearbox = (motorAngle / 10.0) / 50.0;
+  float actualGearbox = gearboxAngle / 10.0;
+  float slippage = actualGearbox - expectedGearbox;
+
+  // Print timestamp
+  Serial.print("[");
+  Serial.print(millis() / 1000);
+  Serial.print("s] Joint ");
+  Serial.print(JOINT_ID);
+  
+  // Print encoder data
+  Serial.print(" | Motor: ");
+  Serial.print(motorAngle / 10.0, 1);
+  Serial.print("° | Gearbox: ");
+  Serial.print(actualGearbox, 1);
+  Serial.print("°");
+  
+  // Print limit switches
+  Serial.print(" | L1: ");
+  Serial.print(limitSwitch1 ? "ON" : "off");
+  Serial.print(" | L2: ");
+  Serial.print(limitSwitch2 ? "ON" : "off");
+  
+  // Print system status
+  Serial.print(" | Status: ");
+  Serial.print(systemReady ? "READY" : "NOT_READY");
+  
+  // Print calculated slippage
+  Serial.print(" | Slippage: ");
+  Serial.print(slippage, 2);
+  Serial.print("°");
+
+  // Alert indicators
+  if (limitSwitch1 || limitSwitch2) {
+    Serial.print(" 🚨 LIMIT!");
+  }
+  
+  if (!systemReady) {
+    Serial.print(" ⚠️ NOT_READY");
+  }
+
+  Serial.println();
 }
