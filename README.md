@@ -22,6 +22,10 @@ As the project progesses, other tutorials and help will be added here...
 
 QUICK CODES:
 
+BUILD:
+colcon build --symlink-install
+source install/setup.bash
+
 1. Launch (For launching Gazebo):
 [Remember to switch xacro files to gazebo_ros2_control/GazeboSystem]
 
