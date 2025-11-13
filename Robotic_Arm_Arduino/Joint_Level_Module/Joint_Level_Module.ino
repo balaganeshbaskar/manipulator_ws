@@ -352,6 +352,8 @@ void printLiveData() {
   Serial.print("° | Gearbox: ");
   Serial.print(actualGearbox, 1);
   Serial.print("°");
+
+  
   
   // Print limit switches
   Serial.print(" | L1: ");
