@@ -123,7 +123,7 @@ void setup() {
   pinMode(LIMIT_SWITCH_PIN2, INPUT_PULLUP);
 
   // Initialize RS485 FIRST (so we can report errors)
-  rs485.begin(38400);
+  rs485.begin(9600);
   pinMode(RS485_DE_PIN, OUTPUT);
   digitalWrite(RS485_DE_PIN, LOW);
   if (debugFlag) Serial.println("✓ RS485 initialized");
