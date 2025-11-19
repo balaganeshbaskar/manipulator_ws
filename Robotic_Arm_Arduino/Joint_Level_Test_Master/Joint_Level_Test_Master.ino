@@ -49,10 +49,10 @@ void loop() {
 
   // Send
   digitalWrite(RS485_DE_PIN, HIGH);
-  delay(2);
+  delayMicroseconds(100);
   rs485.write(pollMsg, 6);  // Send 6 bytes
   rs485.flush();
-  delay(2);
+  delayMicroseconds(100);
   digitalWrite(RS485_DE_PIN, LOW);
 
   Serial.print(F("TX → "));
@@ -123,7 +123,7 @@ void loop() {
   }
 
   Serial.println();
-  delay(1000);  // Poll every 1 second
+  delay(20);  // Poll every 1 second
 }
 
 // ============================================================
