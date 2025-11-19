@@ -64,25 +64,9 @@ struct ErrorFlags {
 } errors;
 
 // ============================================================
-// MESSAGE BUFFER (13 bytes)
+// DEBOUNCE - REDUCED SIZE
 // ============================================================
-uint8_t message[13];
-
-// Message format:
-// [0]    STX (0x02)
-// [1]    ID (1-5)
-// [2-3]  motor_count (uint16, 0-4095)
-// [4-5]  motor_rotations (int16, signed)
-// [6-7]  gearbox_count (uint16, 0-4095)
-// [8]    switches (bit 0: L1, bit 1: L2)
-// [9]    status (8 error flags)
-// [10-11] CRC-16
-// [12]   ETX (0x03)
-
-// ============================================================
-// DEBOUNCE
-// ============================================================
-uint32_t lastChangeTimes[2] = {0, 0};
+uint16_t lastChangeTimes[2] = {0, 0};  // Changed from uint32_t to uint16_t (uses millis() % 65535)
 bool lastStates[2] = {LOW, LOW};
 
 // ============================================================
@@ -107,10 +91,10 @@ void setup() {
   Serial.begin(115200);
   
   if (debugFlag) {
-    Serial.println("\n╔════════════════════════════════════════╗");
-    Serial.println("║  Joint Module - Raw Count Protocol    ║");
-    Serial.println("╚════════════════════════════════════════╝");
-    Serial.print("Joint ID: ");
+    Serial.println(F("\n╔════════════════════════════════════════╗"));
+    Serial.println(F("║  Joint Module - Raw Count Protocol    ║"));
+    Serial.println(F("╚════════════════════════════════════════╝"));
+    Serial.print(F("Joint ID: "));
     Serial.println(JOINT_ID);
     runCRCTest();
   }
@@ -123,10 +107,10 @@ void setup() {
   pinMode(LIMIT_SWITCH_PIN2, INPUT_PULLUP);
 
   // Initialize RS485 FIRST (so we can report errors)
-  rs485.begin(9600);
+  rs485.begin(57600);
   pinMode(RS485_DE_PIN, OUTPUT);
   digitalWrite(RS485_DE_PIN, LOW);
-  if (debugFlag) Serial.println("✓ RS485 initialized");
+  if (debugFlag) Serial.println(F("✓ RS485 initialized"));
 
   // Initialize hardware with fault tolerance
   initHardware();
@@ -143,11 +127,11 @@ void setup() {
   wdt_enable(WDTO_8S); // Enable 8-second watchdog
   
   if (debugFlag) {
-    Serial.println("\n=== Initialization Complete ===");
+    Serial.println(F("\n=== Initialization Complete ==="));
     if (errors.systemReady) {
-      Serial.println("Status: ✓ READY");
+      Serial.println(F("Status: ✓ READY"));
     } else {
-      Serial.println("Status: ⚠ ERRORS DETECTED");
+      Serial.println(F("Status: ⚠ ERRORS DETECTED"));
       printErrorStatus();
     }
   }
@@ -180,7 +164,7 @@ void loop() {
   if (millis() - lastValidCommand > COMMAND_TIMEOUT) {
     errors.commTimeout = true;
     if (debugFlag) {
-      Serial.println("⚠ Communication timeout");
+      Serial.println(F("⚠ Communication timeout"));
     }
     lastValidCommand = millis(); // Reset to prevent spam
   } else {
@@ -194,10 +178,10 @@ void loop() {
 void initHardware() {
   // Try to initialize multiplexer
   if (!mux.begin()) {
-    Serial.println("❌ ERROR: Mux not found");
+    Serial.println(F("❌ ERROR: Mux not found"));
     errors.muxError = true;
   } else {
-    if (debugFlag) Serial.println("✓ Mux initialized");
+    if (debugFlag) Serial.println(F("✓ Mux initialized"));
   }
 
 
@@ -208,16 +192,16 @@ void initHardware() {
     delay(10);
     if (!encoderGearbox.begin()) 
     {
-      Serial.println("❌ ERROR: Gearbox encoder not found");
+      Serial.println(F("❌ ERROR: Gearbox encoder not found"));
       errors.gearboxEncoderError = true;
     } 
     else 
     {
-      if (debugFlag) Serial.println("✓ Gearbox encoder initialized");
+      if (debugFlag) Serial.println(F("✓ Gearbox encoder initialized"));
       // Check magnet immediately
       if (!encoderGearbox.isMagnetDetected()) 
       {
-        Serial.println("⚠ WARNING: Gearbox encoder magnet not detected");
+        Serial.println(F("⚠ WARNING: Gearbox encoder magnet not detected"));
         errors.gearboxMagnetError = true;
       }
     }
@@ -230,16 +214,16 @@ void initHardware() {
     delay(10);
     if (!encoderMotor.begin()) 
     {
-      Serial.println("❌ ERROR: Motor encoder not found");
+      Serial.println(F("❌ ERROR: Motor encoder not found"));
       errors.motorEncoderError = true;
     } 
     else 
     {
-      if (debugFlag) Serial.println("✓ Motor encoder initialized");
+      if (debugFlag) Serial.println(F("✓ Motor encoder initialized"));
       // Check magnet immediately
       if (!encoderMotor.isMagnetDetected()) 
       {
-        Serial.println("⚠ WARNING: Motor encoder magnet not detected");
+        Serial.println(F("⚠ WARNING: Motor encoder magnet not detected"));
         errors.motorMagnetError = true;
       }
     }
@@ -269,17 +253,9 @@ void readSensors() {
     if (prevMotorCount > 3000 && currentMotorCount < 1000) {
       // Crossed 0 going forward
       motorRotations++;
-      if (debugFlag) {
-        Serial.print("Motor rotation forward: ");
-        Serial.println(motorRotations);
-      }
     } else if (prevMotorCount < 1000 && currentMotorCount > 3000) {
       // Crossed 0 going backward
       motorRotations--;
-      if (debugFlag) {
-        Serial.print("Motor rotation backward: ");
-        Serial.println(motorRotations);
-      }
     }
     
     motorCount = currentMotorCount;
@@ -311,12 +287,12 @@ void checkEncoderHealth() {
     mux.selectChannel(ENCODER_CHANNEL_MOTOR);
     if (!encoderMotor.isMagnetDetected()) {
       if (!errors.motorMagnetError) {
-        Serial.println("❌ Motor encoder magnet lost!");
+        Serial.println(F("❌ Motor encoder magnet lost!"));
         errors.motorMagnetError = true;
       }
     } else {
       if (errors.motorMagnetError) {
-        Serial.println("✓ Motor encoder magnet restored");
+        Serial.println(F("✓ Motor encoder magnet restored"));
         errors.motorMagnetError = false;
       }
     }
@@ -327,12 +303,12 @@ void checkEncoderHealth() {
     mux.selectChannel(ENCODER_CHANNEL_GEARBOX);
     if (!encoderGearbox.isMagnetDetected()) {
       if (!errors.gearboxMagnetError) {
-        Serial.println("❌ Gearbox encoder magnet lost!");
+        Serial.println(F("❌ Gearbox encoder magnet lost!"));
         errors.gearboxMagnetError = true;
       }
     } else {
       if (errors.gearboxMagnetError) {
-        Serial.println("✓ Gearbox encoder magnet restored");
+        Serial.println(F("✓ Gearbox encoder magnet restored"));
         errors.gearboxMagnetError = false;
       }
     }
@@ -363,57 +339,94 @@ uint8_t buildStatusByte() {
 }
 
 // ============================================================
-// HANDLE RS485 COMMAND
+// HANDLE RS485 COMMAND - WITH ROBUST BYTE-BY-BYTE
 // ============================================================
 void handleRS485Command() {
   if (debugFlag) {
-    Serial.println("RS485 command received");
+    Serial.println(F("RS485 command received"));
   }
 
-  // Simple poll message (no CODE field needed anymore)
-  uint8_t buf[5];  // [STX][ID][CRC(2)][ETX]
-  rs485.readBytes(buf, 5);
+  // 6-BYTE FORMAT LIKE YOUR OLD WORKING CODE
+  uint8_t buf[6];  // [STX][ID][CODE][CRC_H][CRC_L][ETX]
+  uint8_t index = 0;
+  bool gotSTX = false;
+  unsigned long timeout = millis() + 100;
+
+  // Robust byte-by-byte with STX detection
+  while (millis() < timeout && index < 6) {  // Changed to 6
+    if (rs485.available()) {
+      uint8_t byte = rs485.read();
+      
+      if (!gotSTX) {
+        if (byte == 0x02) {
+          gotSTX = true;
+          buf[index++] = byte;
+        }
+      } else {
+        buf[index++] = byte;
+      }
+    }
+  }
+
+  if (index < 6) {  // Changed to 6
+    if (debugFlag) {
+      Serial.print(F("Incomplete: "));
+      Serial.print(index);
+      Serial.println(F(" bytes"));
+    }
+    return;
+  }
 
   if (debugFlag) {
-    Serial.print("RX: ");
-    for (int i = 0; i < 5; i++) {
-      if (buf[i] < 0x10) Serial.print("0");
+    Serial.print(F("RX: "));
+    for (int i = 0; i < 6; i++) {  // Changed to 6
+      if (buf[i] < 0x10) Serial.print(F("0"));
       Serial.print(buf[i], HEX);
-      Serial.print(" ");
+      Serial.print(F(" "));
     }
     Serial.println();
   }
 
-  // Validate message
-  if (buf[0] == 0x02 && buf[1] == JOINT_ID && buf[4] == 0x03) {
-    // Verify CRC
+  // Validate: [STX][ID][CODE][CRC_H][CRC_L][ETX]
+  if (buf[0] == 0x02 && buf[1] == JOINT_ID && buf[5] == 0x03) {  // ETX at position 5
+    // Verify CRC on first 3 bytes
     crc.restart();
     crc.add(buf[0]);
     crc.add(buf[1]);
+    crc.add(buf[2]);  // Include CODE byte
     uint16_t calculatedCRC = crc.getCRC();
-    uint16_t receivedCRC = ((uint16_t)buf[2] << 8) | buf[3];
+    uint16_t receivedCRC = ((uint16_t)buf[3] << 8) | buf[4];
 
     if (debugFlag) {
-      Serial.print("Calc CRC: 0x");
+      Serial.print(F("Calc CRC: 0x"));
       Serial.print(calculatedCRC, HEX);
-      Serial.print(" | Recv CRC: 0x");
+      Serial.print(F(" | Recv CRC: 0x"));
       Serial.println(receivedCRC, HEX);
     }
 
     if (calculatedCRC == receivedCRC) {
-      if (debugFlag) Serial.println("✓ CRC MATCH - Sending response");
+      if (debugFlag) Serial.println(F("✓ CRC MATCH - Sending response"));
       lastValidCommand = millis();
-      sendLiveData();
+      
+      // Check if it's live data command (0x06)
+      if (buf[2] == 0x06) {
+        sendLiveData();
+      }
     } else if (debugFlag) {
-      Serial.println("✗ CRC mismatch");
+      Serial.println(F("✗ CRC mismatch"));
     }
+  } else if (debugFlag) {
+    Serial.println(F("✗ Invalid frame"));
   }
 }
 
+
 // ============================================================
-// SEND LIVE DATA (13 bytes)
+// SEND LIVE DATA (13 bytes) - LOCAL BUFFER
 // ============================================================
 void sendLiveData() {
+  uint8_t message[13];  // NOW LOCAL, NOT GLOBAL
+  
   message[0] = 0x02;  // STX
   message[1] = JOINT_ID;
 
@@ -455,11 +468,11 @@ void sendLiveData() {
   digitalWrite(RS485_DE_PIN, LOW);
 
   if (debugFlag) {
-    Serial.print("TX: ");
+    Serial.print(F("TX: "));
     for (int i = 0; i < 13; i++) {
-      if (message[i] < 0x10) Serial.print("0");
+      if (message[i] < 0x10) Serial.print(F("0"));
       Serial.print(message[i], HEX);
-      Serial.print(" ");
+      Serial.print(F(" "));
     }
     Serial.println();
   }
@@ -480,70 +493,71 @@ void printLiveData() {
   float slippageDegrees = (slippageCounts / 4096.0) * 360.0;
 
   // Print timestamp
-  Serial.print("[");
+  Serial.print(F("["));
   Serial.print(millis() / 1000);
-  Serial.print("s] J");
+  Serial.print(F("s] J"));
   Serial.print(JOINT_ID);
   
   // Print encoder data (counts + degrees)
-  Serial.print(" | Motor: ");
+  Serial.print(F(" | Motor: "));
   Serial.print(motorCount);
-  Serial.print(" (");
+  Serial.print(F(" ("));
   Serial.print(motorDegrees, 2);
-  Serial.print("°)");
+  Serial.print(F("°)"));
   
-  Serial.print(" | Rot: ");
+  Serial.print(F(" | Rot: "));
   Serial.print(motorRotations);
   
-  Serial.print(" | Gearbox: ");
+  Serial.print(F(" | Gearbox: "));
   Serial.print(gearboxCount);
-  Serial.print(" (");
+  Serial.print(F(" ("));
   Serial.print(gearboxDegrees, 2);
-  Serial.print("°)");
+  Serial.print(F("°)"));
   
   // Print limit switches
-  Serial.print(" | L1: ");
-  Serial.print(limitSwitch1 ? "ON" : "off");
-  Serial.print(" L2: ");
-  Serial.print(limitSwitch2 ? "ON" : "off");
+  Serial.print(F(" | L1: "));
+  Serial.print(limitSwitch1 ? F("ON") : F("off"));
+  Serial.print(F(" L2: "));
+  Serial.print(limitSwitch2 ? F("ON") : F("off"));
   
   // Print system status
-  Serial.print(" | ");
-  Serial.print(errors.systemReady ? "READY" : "ERROR");
+  Serial.print(F(" | "));
+  Serial.print(errors.systemReady ? F("READY") : F("ERROR"));
   
   // Print slippage
-  Serial.print(" | Slip: ");
+  Serial.print(F(" | Slip: "));
   Serial.print(slippageCounts);
-  Serial.print(" (");
+  Serial.print(F(" ("));
   Serial.print(slippageDegrees, 2);
-  Serial.print("°)");
+  Serial.print(F("°)"));
 
   // Alert indicators
   if (limitSwitch1 || limitSwitch2) {
-    Serial.print(" 🚨");
+    Serial.print(F(" 🚨"));
   }
   
   if (!errors.systemReady) {
-    Serial.print(" ⚠");
-    if (errors.muxError) Serial.print(" MUX");
-    if (errors.motorEncoderError) Serial.print(" MOT_ENC");
-    if (errors.gearboxEncoderError) Serial.print(" GB_ENC");
-    if (errors.motorMagnetError) Serial.print(" MOT_MAG");
-    if (errors.gearboxMagnetError) Serial.print(" GB_MAG");
+    Serial.print(F(" ⚠"));
+    if (errors.muxError) Serial.print(F(" MUX"));
+    if (errors.motorEncoderError) Serial.print(F(" MOT_ENC"));
+    if (errors.gearboxEncoderError) Serial.print(F(" GB_ENC"));
+    if (errors.motorMagnetError) Serial.print(F(" MOT_MAG"));
+    if (errors.gearboxMagnetError) Serial.print(F(" GB_MAG"));
   }
 
   Serial.println();
 }
 
 // ============================================================
-// DEBOUNCE LIMIT SWITCH
+// DEBOUNCE LIMIT SWITCH - OPTIMIZED
 // ============================================================
 bool debounceRead(uint8_t pin) {
   int index = (pin == LIMIT_SWITCH_PIN1) ? 0 : 1;
   bool currentState = digitalRead(pin);
   
-  if (currentState != lastStates[index] && (millis() - lastChangeTimes[index]) > 20) {
-    lastChangeTimes[index] = millis();
+  uint16_t currentTime = (uint16_t)(millis() & 0xFFFF);  // Use only lower 16 bits
+  if (currentState != lastStates[index] && (currentTime - lastChangeTimes[index]) > 20) {
+    lastChangeTimes[index] = currentTime;
     lastStates[index] = currentState;
   }
   return lastStates[index];
@@ -553,27 +567,27 @@ bool debounceRead(uint8_t pin) {
 // PRINT ERROR STATUS
 // ============================================================
 void printErrorStatus() {
-  Serial.println("\n=== ERROR STATUS ===");
-  Serial.print("Mux: "); Serial.println(errors.muxError ? "ERROR" : "OK");
-  Serial.print("Motor Encoder: "); Serial.println(errors.motorEncoderError ? "ERROR" : "OK");
-  Serial.print("Gearbox Encoder: "); Serial.println(errors.gearboxEncoderError ? "ERROR" : "OK");
-  Serial.print("Motor Magnet: "); Serial.println(errors.motorMagnetError ? "ERROR" : "OK");
-  Serial.print("Gearbox Magnet: "); Serial.println(errors.gearboxMagnetError ? "ERROR" : "OK");
-  Serial.println("====================\n");
+  Serial.println(F("\n=== ERROR STATUS ==="));
+  Serial.print(F("Mux: ")); Serial.println(errors.muxError ? F("ERROR") : F("OK"));
+  Serial.print(F("Motor Encoder: ")); Serial.println(errors.motorEncoderError ? F("ERROR") : F("OK"));
+  Serial.print(F("Gearbox Encoder: ")); Serial.println(errors.gearboxEncoderError ? F("ERROR") : F("OK"));
+  Serial.print(F("Motor Magnet: ")); Serial.println(errors.motorMagnetError ? F("ERROR") : F("OK"));
+  Serial.print(F("Gearbox Magnet: ")); Serial.println(errors.gearboxMagnetError ? F("ERROR") : F("OK"));
+  Serial.println(F("====================\n"));
 }
 
 // ============================================================
 // CRC TEST
 // ============================================================
 void runCRCTest() {
-  Serial.println("\n--- CRC-16 Test ---");
+  Serial.println(F("\n--- CRC-16 Test ---"));
   
   // Test new poll message format (no CODE)
   uint8_t test1[] = {0x02, 0x01};
   crc.restart();
   crc.add(test1, sizeof(test1));
-  Serial.print("Poll msg (02 01) -> CRC: 0x");
+  Serial.print(F("Poll msg (02 01) -> CRC: 0x"));
   Serial.println(crc.getCRC(), HEX);
   
-  Serial.println("--- Test Complete ---\n");
+  Serial.println(F("--- Test Complete ---\n"));
 }
