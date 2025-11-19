@@ -1,246 +1,162 @@
+// Arduino Nano RS485 Master Polling Node
+// Polls joint module with robust STX detection
+
 #include <SoftwareSerial.h>
 #include <CRC16.h>
 
-// Minimal debug flag
-const uint8_t debugFlag = 0;
-
-const uint8_t RS485_TX_PIN = 8;
-const uint8_t RS485_RX_PIN = 9;
-const uint8_t RS485_DE_PIN = 10;
+// RS485 pins on Nano Master
+#define RS485_TX_PIN 8  // Digital pin 3 → MAX485 DI
+#define RS485_RX_PIN 9  // Digital pin 4 → MAX485 RO
+#define RS485_DE_PIN 10  // Digital pin 2 → MAX485 DE & RE (tied together)
 
 SoftwareSerial rs485(RS485_RX_PIN, RS485_TX_PIN);
-
-uint8_t TARGET_JOINT_ID = 1;  // Changed from const to allow modification
-const unsigned long POLL_INTERVAL = 100;  // Faster polling for testing
-
-// CRC calculator
 CRC16 crc;
 
-// Only live data command now
-#define CODE_LIVE_DATA 0x06
+const uint8_t JOINT_ID = 1;  // Joint ID to poll
 
-bool manualMode = false;
-
-void setup() 
-{
+void setup() {
   Serial.begin(115200);
-  rs485.begin(38400);
+  while (!Serial && millis() < 3000);
+  
+  rs485.begin(57600);
   pinMode(RS485_DE_PIN, OUTPUT);
-  digitalWrite(RS485_DE_PIN, LOW);
+  digitalWrite(RS485_DE_PIN, LOW);  // Start in receive mode
 
-  Serial.println(F("=== Simplified Joint Tester ==="));
-  Serial.print(F("Auto-polling live data from Joint "));  // Fixed F() concatenation
-  Serial.println(TARGET_JOINT_ID);
-  Serial.println(F("Press 'm' for manual mode, 'h' for help"));
-  Serial.println(F("======================================"));
+  Serial.println(F("\n===== Arduino Nano RS485 Master ====="));
+  Serial.println(F("Polling Joint Module...\n"));
+  delay(1000);
 }
 
-void loop() 
-{
-  // Check for user input
-  if (Serial.available()) {
-    char input = Serial.read();
-    processUserInput(input);
-  }
+void loop() {
+  // Build 6-BYTE poll message: [STX][ID][CODE][CRC_H][CRC_L][ETX]
+  uint8_t pollMsg[6];  // Changed to 6
+  pollMsg[0] = 0x02;
+  pollMsg[1] = JOINT_ID;
+  pollMsg[2] = 0x06;  // CODE_LIVE_DATA
 
-  // Auto polling - only live data now
-  if (!manualMode) {
-    static unsigned long lastPoll = 0;
-    if (millis() - lastPoll > POLL_INTERVAL) 
-    {
-      sendPoll();
-      receiveResponse();
-      lastPoll = millis();
-    }
-  }
-}
-
-void processUserInput(char input) {
-  switch(input) {
-    case 't': 
-    case 'T':
-      sendPoll();
-      receiveResponse();
-      break;
-      
-    case 'm': 
-    case 'M':
-      manualMode = !manualMode; 
-      Serial.print(F("Mode: "));
-      Serial.println(manualMode ? F("MANUAL - Press 't' to test") : F("AUTO - Continuous polling"));
-      break;
-      
-    case 'h': 
-    case 'H':
-      printHelp();
-      break;
-      
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-      TARGET_JOINT_ID = input - '0';
-      Serial.print(F("Target Joint ID changed to: "));
-      Serial.println(TARGET_JOINT_ID);
-      break;
-      
-    default: 
-      Serial.println(F("Unknown command. Press 'h' for help."));
-      break;
-  }
-}
-
-void printHelp() {
-  Serial.println(F("\n=== HELP MENU ==="));
-  Serial.println(F("t - Send single test poll"));
-  Serial.println(F("m - Toggle Manual/Auto mode"));
-  Serial.println(F("1-5 - Change target joint ID"));
-  Serial.println(F("h - Show this help"));
-  Serial.println(F("=================="));
-}
-
-void sendPoll() 
-{
-  uint8_t msg[6];
-  msg[0] = 0x02;  // STX
-  msg[1] = TARGET_JOINT_ID;
-  msg[2] = CODE_LIVE_DATA;
-  
   crc.restart();
-  crc.add(msg[0]);
-  crc.add(msg[1]);
-  crc.add(msg[2]);
-  uint16_t calcCRC = crc.getCRC();
-  
-  msg[3] = (calcCRC >> 8) & 0xFF;
-  msg[4] = calcCRC & 0xFF;
-  msg[5] = 0x03;  // ETX
+  crc.add(pollMsg[0]);
+  crc.add(pollMsg[1]);
+  crc.add(pollMsg[2]);  // Include CODE
+  uint16_t cval = crc.getCRC();
 
+  pollMsg[3] = (cval >> 8) & 0xFF;
+  pollMsg[4] = cval & 0xFF;
+  pollMsg[5] = 0x03;  // ETX at position 5
+
+  // Clear buffer
+  while (rs485.available()) rs485.read();
+
+  // Send
   digitalWrite(RS485_DE_PIN, HIGH);
-  delay(1);
-  rs485.write(msg, 6);
+  delay(2);
+  rs485.write(pollMsg, 6);  // Send 6 bytes
   rs485.flush();
-  delay(1);
+  delay(2);
   digitalWrite(RS485_DE_PIN, LOW);
 
-  if (debugFlag) {
-    Serial.print(F("Poll sent to Joint "));
-    Serial.println(TARGET_JOINT_ID);
+  Serial.print(F("TX → "));
+  for (int i = 0; i < 6; i++) {
+    if (pollMsg[i] < 0x10) Serial.print(F("0"));
+    Serial.print(pollMsg[i], HEX);
+    Serial.print(F(" "));
   }
+  Serial.println();
+
+  // 4. Receive response with robust STX detection (13 bytes expected)
+  uint8_t response[13];
+  bool received = receiveResponse(response, 13, 200); // 200ms timeout
+
+  if (received) {
+    Serial.print(F("RX ← "));
+    for (int i = 0; i < 13; i++) {
+      if (response[i] < 0x10) Serial.print(F("0"));
+      Serial.print(response[i], HEX);
+      Serial.print(F(" "));
+    }
+    Serial.println();
+
+    // 5. Validate frame structure
+    if (response[0] == 0x02 && response[12] == 0x03 && response[1] == JOINT_ID) {
+      // 6. Verify CRC (bytes 0-9)
+      crc.restart();
+      for (int i = 0; i <= 9; i++) {
+        crc.add(response[i]);
+      }
+      uint16_t calcCRC = crc.getCRC();
+      uint16_t recvCRC = ((uint16_t)response[10] << 8) | response[11];
+
+      if (calcCRC == recvCRC) {
+        Serial.println(F("✓ Valid response - CRC OK"));
+
+        // 7. Parse data
+        uint16_t motorCount = ((uint16_t)response[2] << 8) | response[3];
+        int16_t motorRotations = ((int16_t)response[4] << 8) | response[5];
+        uint16_t gearboxCount = ((uint16_t)response[6] << 8) | response[7];
+        uint8_t switches = response[8];
+        uint8_t status = response[9];
+
+        Serial.print(F("  Motor: "));
+        Serial.print(motorCount);
+        Serial.print(F(" | Rot: "));
+        Serial.print(motorRotations);
+        Serial.print(F(" | Gearbox: "));
+        Serial.print(gearboxCount);
+        Serial.print(F(" | L1: "));
+        Serial.print((switches & 0x01) ? F("ON") : F("off"));
+        Serial.print(F(" L2: "));
+        Serial.print((switches & 0x02) ? F("ON") : F("off"));
+        Serial.print(F(" | Status: "));
+        Serial.println((status & 0x01) ? F("READY") : F("ERROR"));
+      } else {
+        Serial.print(F("✗ CRC Mismatch (calc: 0x"));
+        Serial.print(calcCRC, HEX);
+        Serial.print(F(" recv: 0x"));
+        Serial.print(recvCRC, HEX);
+        Serial.println(F(")"));
+      }
+    } else {
+      Serial.println(F("✗ Frame error or wrong Joint ID"));
+    }
+  } else {
+    Serial.println(F("✗ Timeout - No valid response"));
+  }
+
+  Serial.println();
+  delay(1000);  // Poll every 1 second
 }
 
-void receiveResponse() 
-{
-  uint8_t response[13];
-  uint8_t index = 0;
-  unsigned long timeout = millis() + 200;  // Shorter timeout
+// ============================================================
+// ROBUST BYTE-BY-BYTE RECEIVE WITH STX DETECTION
+// ============================================================
+bool receiveResponse(uint8_t *response, size_t length, unsigned long timeoutMs) {
+  unsigned long startTime = millis();
+  size_t index = 0;
   bool gotSTX = false;
 
-  // Simple receive
-  while (millis() < timeout && index < 13) 
-  {
-    if (rs485.available()) 
-    {
+  // Read byte-by-byte, looking for STX first
+  while (millis() - startTime < timeoutMs && index < length) {
+    if (rs485.available()) {
       uint8_t byte = rs485.read();
-      
+
       if (!gotSTX) {
+        // Looking for STX (0x02)
         if (byte == 0x02) {
           gotSTX = true;
           response[index++] = byte;
         }
+        // else: discard garbage bytes before STX
       } else {
+        // Already got STX, collect remaining bytes
         response[index++] = byte;
       }
     }
   }
 
-  if (index == 13) {
-    // CRC check
-    crc.restart();
-    for (int i = 0; i < 10; i++) {
-      crc.add(response[i]);
-    }
-    uint16_t calcCRC = crc.getCRC();
-    uint16_t recvCRC = ((uint16_t)response[10] << 8) | response[11];
-
-    if (calcCRC == recvCRC && response[12] == 0x03) {
-      parseResponse(response);
-    } else {
-      Serial.println(F("❌ CRC Error or Invalid ETX"));
-      printRawData(response, index);
-    }
-  } else if (index > 0) {
-    Serial.print(F("❌ Incomplete packet ("));
-    Serial.print(index);
-    Serial.println(F(" bytes)"));
-    printRawData(response, index);
+  // Validate we got a complete frame with correct start and end markers
+  if (index == length && gotSTX && response[length-1] == 0x03) {
+    return true; // Valid frame received
   } else {
-    Serial.println(F("❌ Timeout - No response"));
+    return false; // Timeout or invalid frame
   }
-}
-
-void parseResponse(uint8_t* r) {
-  // Verify this is from correct joint and is live data
-  if (r[1] != TARGET_JOINT_ID) {
-    Serial.print(F("⚠️  Response from wrong joint: "));
-    Serial.println(r[1]);
-    return;
-  }
-  
-  if (r[2] != CODE_LIVE_DATA) {
-    Serial.print(F("⚠️  Unexpected command response: 0x"));
-    Serial.println(r[2], HEX);
-    return;
-  }
-
-  // Parse the simplified live data format
-  uint16_t motorAngle = (r[3] << 8) | r[4];
-  uint16_t gearboxAngle = (r[5] << 8) | r[6];
-  uint8_t limitSwitches = r[7];
-  uint8_t systemStatus = r[8];
-
-  // Display data in clean format
-  Serial.print(F("Joint "));
-  Serial.print(r[1]);
-  Serial.print(F(" | Motor: "));
-  Serial.print(motorAngle / 10.0, 1);
-  Serial.print(F("° | Gearbox: "));
-  Serial.print(gearboxAngle / 10.0, 1);
-  Serial.print(F("° | L1: "));
-  Serial.print((limitSwitches & 0x01) ? F("ON") : F("off"));
-  Serial.print(F(" | L2: "));
-  Serial.print((limitSwitches & 0x02) ? F("ON") : F("off"));
-  Serial.print(F(" | Status: "));
-  Serial.print((systemStatus & 0x01) ? F("READY") : F("NOT_READY"));
-
-  // Calculate and display slippage (since it's no longer sent)
-  float expectedGearbox = motorAngle / 50.0; // Assuming 50:1 gear ratio
-  float actualGearbox = gearboxAngle / 10.0;
-  float slippage = actualGearbox - expectedGearbox;
-  Serial.print(F(" | Slippage: "));
-  Serial.print(slippage, 2);
-  Serial.println(F("°"));
-
-  // Alert on limit switch activation
-  if (limitSwitches & 0x03) {
-    Serial.println(F("🚨 LIMIT SWITCH ACTIVE!"));
-  }
-
-  // Alert on system not ready
-  if (!(systemStatus & 0x01)) {
-    Serial.println(F("⚠️  SYSTEM NOT READY"));
-  }
-}
-
-void printRawData(uint8_t* data, uint8_t length) {
-  Serial.print(F("Raw data ("));
-  Serial.print(length);
-  Serial.print(F(" bytes): "));
-  for (int i = 0; i < length; i++) {
-    if (data[i] < 0x10) Serial.print(F("0"));
-    Serial.print(data[i], HEX);
-    Serial.print(F(" "));
-  }
-  Serial.println();
 }
