@@ -1,4 +1,10 @@
-ROBOTIC ARM folder is for the Arduino Nano code backup
+ROBOTIC ARM folder is for the Arduino Nano Joint module code backup
+
+
+Teensy 4.1 folder is for the teensy 4.1 sub brain code.
+
+
+
 
 REST OF THE FOLDERS FOR ROS2...
 
