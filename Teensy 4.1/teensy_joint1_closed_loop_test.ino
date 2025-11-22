@@ -1,10 +1,9 @@
 // ============================================================
-// PRECISION JOINT CONTROLLER - HYBRID DUAL LOOP (FULL PRINTS)
+// PRECISION JOINT CONTROLLER - ULTRA PRECISION (0.01 deg)
 // ============================================================
-// - Coarse positioning: Gearbox Encoder
-// - Fine positioning: Motor Encoder
-// - FIXED: Motor Direction Inversion Handling
-// - FIXED: Original Print Statements Restored
+// - Resolution: 0.0017 deg (Sensor) / 0.0045 deg (Step)
+// - Reporting: 4 Decimal Places
+// - Logic: Sensor Fusion (Gearbox Coarse + Motor Fine)
 // ============================================================
 
 #include <TeensyTimerTool.h>
@@ -25,22 +24,23 @@ const float GEARBOX_STEPS_PER_DEGREE = (MOTOR_STEPS_PER_REV / 360.0) * GEAR_RATI
 // MOTION PARAMETERS
 // ============================================================
 const float MAX_VELOCITY = 40.0;
-const float ACCELERATION = 80.0;
+const float ACCELERATION = 100.0; // was 8
 const float DECEL_SAFETY_FACTOR = 2.0;
 
-const float DEADZONE = 0.05;
-const float PRECISION_THRESHOLD = 0.08;
-const float HYBRID_SWITCH_THRESHOLD = 2.0;
+// >>> ULTRA PRECISION SETTINGS <<<
+const float DEADZONE = 0.010;              // 5 thousandths of a degree
+const float PRECISION_THRESHOLD = 0.01;    // Target: +/- 0.01 degree
+const float HYBRID_SWITCH_THRESHOLD = 2.0; 
 
 const float MAX_ACCEPTABLE_ERROR = 0.5;
-const float CORRECTION_SPEED = 1.0;
+const float CORRECTION_SPEED = 1;        // Slower correction for micro-steps
 
 const float MIN_SPEED_FAR = 8.0;
 const float MIN_SPEED_NEAR = 4.0;
-const float MIN_SPEED_CLOSE = 1.0;
+const float MIN_SPEED_CLOSE = 1;         // Crawl speed for final micron-landing
 
-const unsigned long SETTLING_DURATION = 100;
-const uint8_t MAX_CORRECTION_ATTEMPTS = 3; 
+const unsigned long SETTLING_DURATION = 150; // Slightly longer to settle vibration
+const uint8_t MAX_CORRECTION_ATTEMPTS = 5;   // More attempts allowed for high precision
 
 // ============================================================
 // HARDWARE PINS
@@ -85,11 +85,11 @@ public:
   }
   
   void setSpeed(float deg_per_sec) {
-    if (abs(deg_per_sec) < 0.01) { stop(); return; }
+    if (abs(deg_per_sec) < 0.001) { stop(); return; } // Higher sensitivity stop
     float steps_per_sec = abs(deg_per_sec) * GEARBOX_STEPS_PER_DEGREE;
     float interval_us = 1000000.0 / steps_per_sec;
     if (interval_us < 5.0) interval_us = 5.0;
-    if (interval_us > 200000.0) { stop(); return; }
+    if (interval_us > 500000.0) { stop(); return; } // Allow slower pulses
     if (!running) {
       running = true;
       timer.begin([this]() { this->pulseISR(); }, interval_us);
@@ -149,18 +149,6 @@ struct JointData {
 } joint1;
 
 // ============================================================
-// FUNCTION PROTOTYPES
-// ============================================================
-void logData();
-void printMoveSummary();
-void printStatus();
-float countToAngle(float c);
-float angleToCount(float a);
-float getMotorAngleTotal();
-void pollJoint();
-void updateControlLoop();
-
-// ============================================================
 // SETUP
 // ============================================================
 void setup() {
@@ -177,14 +165,14 @@ void setup() {
   digitalWrite(RS485_DE_PIN, LOW);
   
   Serial.println(F("\n╔═══════════════════════════════════════════════════╗"));
-  Serial.println(F("║  PRECISION JOINT CONTROLLER - HYBRID (INV FIX)    ║"));
+  Serial.println(F("║  PRECISION JOINT CONTROLLER - ULTRA HIGH RES      ║"));
   Serial.println(F("╚═══════════════════════════════════════════════════╝\n"));
   
   Serial.print(F("Waiting for encoder..."));
   while (!joint1.dataValid) { pollJoint(); delay(10); }
   current_position_count = (float)joint1.gearboxCount;
   Serial.println(F(" OK"));
-  Serial.print(F("Initial: ")); Serial.print(countToAngle(current_position_count), 2); Serial.println(F("°"));
+  Serial.print(F("Initial: ")); Serial.print(countToAngle(current_position_count), 4); Serial.println(F("°"));
   Serial.println(F("Ready! Try: M 150"));
 }
 
@@ -207,6 +195,19 @@ void loop() {
   }
 }
 
+// Helper: Get High Resolution Output Angle (Derived from Motor)
+float getHighResOutputAngle() {
+  float motor_angle = (joint1.motorCount / 4096.0) * 360.0;
+  float total_motor = (joint1.motorRotations * 360.0) + motor_angle;
+  
+  // Convert to output shaft degrees, accounting for sign
+  // Note: This value is relative to startup or calibration. 
+  // For absolute readout we combine it with Gearbox coarse data.
+  // But for logging movements, this raw high-res value / ratio is fine.
+  return total_motor / (GEAR_RATIO * MOTOR_DIRECTION_SIGN); 
+}
+
+// Standard Motor Angle
 float getMotorAngleTotal() {
   float raw = (joint1.motorCount / 4096.0) * 360.0;
   return (joint1.motorRotations * 360.0) + raw;
@@ -220,7 +221,7 @@ void processCommands() {
   else if (t == 'R') moveRelative(cmd.substring(2).toFloat());
   else if (t == 'S') { stepGen.stop(); state = HOLDING; move_active = false; digitalWrite(pins[ACTIVE_JOINT].ena, LOW); Serial.println(F("STOPPED")); }
   else if (t == 'X') { stepGen.stop(); state = HOLDING; move_active = false; digitalWrite(pins[ACTIVE_JOINT].ena, HIGH); Serial.println(F("RELAXED")); }
-  else if (t == 'Q') { pollJoint(); Serial.print(F("Pos: ")); Serial.println(countToAngle(current_position_count), 3); }
+  else if (t == 'Q') { pollJoint(); printStatus(); }
   else if (t == 'T') printStatus();
 }
 
@@ -234,13 +235,12 @@ void moveToAngle(float target_degrees) {
   if (delta_gb < -180.0) delta_gb += 360.0;
   
   float current_mot = getMotorAngleTotal();
-  // SIGN CORRECTION HERE:
   target_angle_motor = current_mot + (delta_gb * GEAR_RATIO * MOTOR_DIRECTION_SIGN);
   
   state = IDLE; current_velocity = 0.0; stepGen.resetSteps();
   move_start_time = millis(); log_start_time = millis(); move_active = true;
   last_error_degrees = 999.0; correction_attempts = 0;
-  Serial.print(F("\nMoving to ")); Serial.print(target_degrees, 2); Serial.println(F("°"));
+  Serial.print(F("\nMoving to ")); Serial.print(target_degrees, 4); Serial.println(F("°"));
 }
 
 void moveRelative(float delta) { moveToAngle(countToAngle(joint1.gearboxCount) + delta); }
@@ -263,18 +263,13 @@ void updateControlLoop() {
   if (abs(error_gb) > HYBRID_SWITCH_THRESHOLD) {
     effective_error = error_gb;
   } else {
-    // RE-SYNC TARGET IF ENTERING FINE MODE
-    // Recalculate target dynamically to lock it to Gearbox Truth
     float ideal_motor_target = current_angle_motor + (error_gb * GEAR_RATIO * MOTOR_DIRECTION_SIGN);
     target_angle_motor = ideal_motor_target;
-    
     float error_mot = target_angle_motor - current_angle_motor;
-    // Convert motor error back to output frame
     effective_error = error_mot / (GEAR_RATIO * MOTOR_DIRECTION_SIGN);
     use_fine_mode = true;
   }
   
-  // For Logging
   position_error_counts = (effective_error / 360.0) * 4096.0;
   float distance_remaining = abs(effective_error);
   
@@ -285,13 +280,13 @@ void updateControlLoop() {
       else if (correction_attempts < MAX_CORRECTION_ATTEMPTS) {
         correction_attempts++;
         Serial.print(F("→ Correction #")); Serial.print(correction_attempts);
-        Serial.print(F(": Error = ")); Serial.print(effective_error, 4); Serial.println(F("°"));
+        Serial.print(F(": Err:")); Serial.println(effective_error, 4);
         state = CORRECTING;
         direction_cw = (effective_error > 0.0);
         setDirection(direction_cw);
       } else {
         state = HOLDING; move_active = false;
-        Serial.print(F("⚠ Max corrections. Error: ")); Serial.print(effective_error, 3); Serial.println(F("°"));
+        Serial.print(F("⚠ Max corrections. Error: ")); Serial.print(effective_error, 4); Serial.println(F("°"));
         printMoveSummary(); return;
       }
     }
@@ -305,8 +300,15 @@ void updateControlLoop() {
   }
   
   if (abs(last_error_degrees) > DEADZONE && abs(last_error_degrees) < 999.0) {
-    if ((last_error_degrees > 0 && effective_error < 0) || (last_error_degrees < 0 && effective_error > 0)) {
-      Serial.println(F("⚠ Overshoot. Stopping.")); stepGen.stop(); state = SETTLING; settling_start_time = millis(); return;
+    if ((last_error_degrees > 0 && effective_error < 0) || (last_error_degrees < 0 && effective_error > 0)) 
+    {
+      if (abs(effective_error) > PRECISION_THRESHOLD) {
+          Serial.println(F("⚠ Overshoot. Stopping."));
+          stepGen.stop();
+          state = SETTLING;
+          settling_start_time = millis();
+          return;
+      }
     }
   }
   last_error_degrees = effective_error;
@@ -316,7 +318,7 @@ void updateControlLoop() {
 
   if (state == CORRECTING) {
     current_velocity = CORRECTION_SPEED;
-    if (distance_remaining < 0.5) current_velocity = 0.5;
+    if (distance_remaining < 0.02) current_velocity = 0.2; // Ultra-fine crawl
   } else if (state == IDLE) {
     direction_cw = (effective_error > 0.0); setDirection(direction_cw); current_velocity = 0.0; state = ACCELERATING;
   } else if (state == ACCELERATING) {
@@ -366,61 +368,58 @@ void parseResponse(uint8_t *r) {
 }
 
 // ============================================================
-// PRINT FUNCTIONS (RESTORED)
+// HIGH PRECISION LOGGING
 // ============================================================
 void logData() {
   if (!joint1.dataValid) return;
   
-  float target_angle = countToAngle(target_count);
-  float current_angle = countToAngle(current_position_count);
-  float error_deg = (position_error_counts / 4096.0) * 360.0;
+  // Logic to display High Res position in logs
+  float gb_coarse = countToAngle(current_position_count);
+  float mot_fine_relative = getHighResOutputAngle(); // Raw High Res angle
   
-  const char* stateStr;
+  // We print the Gearbox (Absolute) but calculated error is High Res
+  float effective_error = (position_error_counts / 4096.0) * 360.0;
+  
+  const char* sStr;
   switch(state) {
-    case IDLE: stateStr = "IDLE"; break;
-    case ACCELERATING: stateStr = "ACCEL"; break;
-    case CRUISING: stateStr = "CRUISE"; break;
-    case DECELERATING: stateStr = "DECEL"; break;
-    case SETTLING: stateStr = "SETTLING"; break;
-    case CORRECTING: stateStr = "CORRECT"; break;
-    case HOLDING: stateStr = "HOLD"; break;
-    default: stateStr = "?"; break;
+    case IDLE: sStr="IDLE"; break;
+    case ACCELERATING: sStr="ACCEL"; break;
+    case CRUISING: sStr="CRUISE"; break;
+    case DECELERATING: sStr="DECEL"; break;
+    case SETTLING: sStr="SETTLING"; break;
+    case CORRECTING: sStr="CORRECT"; break;
+    case HOLDING: sStr="HOLD"; break;
+    default: sStr="?"; break;
   }
   
-  Serial.print(F("["));
-  Serial.print((millis() - log_start_time) / 1000.0, 1);
-  Serial.print(F("s] T:"));
-  Serial.print(target_angle, 2);
-  Serial.print(F("° Pos:"));
-  Serial.print(current_angle, 3);
-  Serial.print(F("° Err:"));
-  Serial.print(error_deg, 3);
-  Serial.print(F("° V:"));
-  Serial.print(current_velocity, 1);
-  Serial.print(F(" "));
-  Serial.println(stateStr);
+  Serial.print(F("[")); Serial.print((millis() - log_start_time) / 1000.0, 1);
+  Serial.print(F("s] T:")); Serial.print(countToAngle(target_count), 2);
+  Serial.print(F("° Pos:")); Serial.print(gb_coarse, 3); // Still show coarse pos for context
+  Serial.print(F("° Err:")); Serial.print(effective_error, 4); // Show HIGH RES error
+  Serial.print(F("° V:")); Serial.print(current_velocity, 1);
+  Serial.print(F(" ")); Serial.println(sStr);
 }
 
-void printMoveSummary() {
-  unsigned long duration = millis() - move_start_time;
-  float target_angle = countToAngle(target_count);
-  float final_angle = countToAngle(current_position_count);
-  float final_error_deg = (position_error_counts / 4096.0) * 360.0;
+void printMoveSummary() 
+{
+  unsigned long duration_ms = millis() - move_start_time;
+  float gb_coarse = countToAngle(joint1.gearboxCount);
+  float final_err = (position_error_counts / 4096.0) * 360.0; // High Res Error
   
   Serial.println(F("\n╔═══════════════════════════════════════╗"));
   Serial.println(F("║         MOVE COMPLETE                 ║"));
   Serial.println(F("╠═══════════════════════════════════════╣"));
-  Serial.print(F("║ Target:      ")); Serial.print(target_angle, 2); Serial.println(F("°"));
-  Serial.print(F("║ Final:       ")); Serial.print(final_angle, 3); Serial.println(F("°"));
-  Serial.print(F("║ GB Raw:      ")); Serial.println(joint1.gearboxCount);
-  Serial.print(F("║ Error:       ")); Serial.print(final_error_deg, 3); Serial.println(F("°"));
+  Serial.print(F("║ Target:      ")); Serial.print(countToAngle(target_count), 4); Serial.println(F("°"));
+  Serial.print(F("║ Final GB:    ")); Serial.print(gb_coarse, 4); Serial.println(F("° (Coarse)"));
+  Serial.print(F("║ Error:       ")); Serial.print(final_err, 4); Serial.println(F("° (Fine)"));
   Serial.print(F("║ Corrections: ")); Serial.println(correction_attempts);
-  Serial.print(F("║ Duration:    ")); Serial.print(duration / 1000.0, 2); Serial.println(F(" s"));
+  Serial.print(F("║ Duration:    ")); Serial.print(duration_ms / 1000.0, 2); Serial.println(F(" s"));
   Serial.print(F("║ Steps:       ")); Serial.println(stepGen.getSteps());
   Serial.print(F("║ Success:     "));
-  Serial.println(abs(final_error_deg) < MAX_ACCEPTABLE_ERROR ? F("YES ✓") : F("NO ✗"));
+  Serial.println(abs(final_err) < MAX_ACCEPTABLE_ERROR ? F("YES ✓") : F("NO ✗"));
   Serial.println(F("╚═══════════════════════════════════════╝\n"));
 }
+
 
 void printStatus() {
   pollJoint();
