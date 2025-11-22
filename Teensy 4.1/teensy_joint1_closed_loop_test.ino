@@ -1,10 +1,10 @@
 // ============================================================
-// PRECISION JOINT CONTROLLER - SAFETY ENHANCED
+// PRECISION JOINT CONTROLLER - HYBRID DUAL LOOP (FULL PRINTS)
 // ============================================================
-// - TeensyTimerTool for jitter-free pulses
-// - 5-Axis Scalable
-// - FIXED: Holding torque ensures motor stops dead
-// - ADDED: Following Error, Comms Watchdog, Soft Limits
+// - Coarse positioning: Gearbox Encoder
+// - Fine positioning: Motor Encoder
+// - FIXED: Motor Direction Inversion Handling
+// - FIXED: Original Print Statements Restored
 // ============================================================
 
 #include <TeensyTimerTool.h>
@@ -16,6 +16,7 @@ using namespace TeensyTimerTool;
 // CONSTANTS
 // ============================================================
 const float GEAR_RATIO = 50.0;
+const int MOTOR_DIRECTION_SIGN = -1; // -1 because Motor CW = Gearbox CCW
 const uint16_t MICROSTEPS = 8;
 const float MOTOR_STEPS_PER_REV = 200.0 * MICROSTEPS;
 const float GEARBOX_STEPS_PER_DEGREE = (MOTOR_STEPS_PER_REV / 360.0) * GEAR_RATIO;
@@ -27,23 +28,19 @@ const float MAX_VELOCITY = 40.0;
 const float ACCELERATION = 80.0;
 const float DECEL_SAFETY_FACTOR = 2.0;
 
-const float DEADZONE = 0.3;
-const float PRECISION_THRESHOLD = 0.2;
+const float DEADZONE = 0.05;
+const float PRECISION_THRESHOLD = 0.08;
+const float HYBRID_SWITCH_THRESHOLD = 2.0;
+
 const float MAX_ACCEPTABLE_ERROR = 0.5;
 const float CORRECTION_SPEED = 1.0;
 
 const float MIN_SPEED_FAR = 8.0;
 const float MIN_SPEED_NEAR = 4.0;
-const float MIN_SPEED_CLOSE = 2.0;
+const float MIN_SPEED_CLOSE = 1.0;
 
 const unsigned long SETTLING_DURATION = 100;
-const uint8_t MAX_CORRECTION_ATTEMPTS = 2;
-
-// >>> NEW SAFETY PARAMETERS <<<
-const float MAX_FOLLOWING_ERROR = 10.0;    // Max allowed deviation during move (degrees)
-const unsigned long COMMS_TIMEOUT = 200;   // Max ms without encoder data
-const float SOFT_LIMIT_MIN = 0.0;          // Minimum joint angle
-const float SOFT_LIMIT_MAX = 360.0;        // Maximum joint angle
+const uint8_t MAX_CORRECTION_ATTEMPTS = 3; 
 
 // ============================================================
 // HARDWARE PINS
@@ -52,11 +49,7 @@ struct JointPins {
   uint8_t step, dir, ena;
 };
 const JointPins pins[5] = {
-  {3, 4, 5},
-  {6, 7, 8},
-  {9, 10, 11},
-  {12, 13, 14},
-  {15, 16, 17}
+  {3, 4, 5}, {6, 7, 8}, {9, 10, 11}, {12, 13, 14}, {15, 16, 17}
 };
 #define ACTIVE_JOINT 0
 
@@ -71,28 +64,18 @@ CRC16 crc;
 // STATES
 // ============================================================
 enum ControlState {
-  IDLE,
-  ACCELERATING,
-  CRUISING,
-  DECELERATING,
-  SETTLING,
-  CORRECTING,
-  HOLDING,
-  ERROR_STOP  // New state for safety stops
+  IDLE, ACCELERATING, CRUISING, DECELERATING, SETTLING, CORRECTING, HOLDING
 };
 ControlState state = HOLDING;
 
 // ============================================================
 // STEP GENERATOR CLASS
 // ============================================================
-// ============================================================
-// STEP GENERATOR - "HARD STOP" VERSION
-// ============================================================
 class StepGenerator {
 private:
   PeriodicTimer timer;
   uint8_t stepPin;
-  volatile bool running;  // Master switch
+  volatile bool running;
   volatile uint32_t stepCount;
   
 public:
@@ -102,42 +85,31 @@ public:
   }
   
   void setSpeed(float deg_per_sec) {
-    if (abs(deg_per_sec) < 0.01) {
-      stop();
-      return;
-    }
-    
+    if (abs(deg_per_sec) < 0.01) { stop(); return; }
     float steps_per_sec = abs(deg_per_sec) * GEARBOX_STEPS_PER_DEGREE;
     float interval_us = 1000000.0 / steps_per_sec;
-    
-    // Safety Clamps
     if (interval_us < 5.0) interval_us = 5.0;
     if (interval_us > 200000.0) { stop(); return; }
-    
     if (!running) {
       running = true;
-      // Start new timer
       timer.begin([this]() { this->pulseISR(); }, interval_us);
     } else {
-      // Update existing timer
       timer.setPeriod(interval_us);
     }
   }
   
   void stop() {
-    running = false; // 1. LOGICAL STOP (ISR checks this first)
-    timer.end();     // 2. HARDWARE STOP
-    digitalWriteFast(stepPin, LOW); // 3. ELECTRICAL STOP
+    running = false;
+    timer.end();
+    digitalWriteFast(stepPin, LOW);
   }
   
   uint32_t getSteps() { return stepCount; }
   void resetSteps() { stepCount = 0; }
   
 private:
-  // Inline ISR for maximum speed and checking
   void pulseISR() {
-    if (!running) return; // Immediate exit if logically stopped
-    
+    if (!running) return;
     digitalWriteFast(stepPin, HIGH);
     delayMicroseconds(2);
     digitalWriteFast(stepPin, LOW);
@@ -145,23 +117,23 @@ private:
   }
 };
 
-
 // ============================================================
 // VARIABLES
 // ============================================================
+float target_angle_gb = 0.0;
+float target_angle_motor = 0.0;
+float current_angle_gb = 0.0;
+float current_angle_motor = 0.0;
 float target_count = 0.0;
-float current_position_count = 0.0;
-float current_velocity = 0.0;
+float current_position_count = 0.0; 
 float position_error_counts = 0.0;
+float current_velocity = 0.0;
 float last_error_degrees = 0.0;
 bool direction_cw = true;
 bool move_active = false;
-
 unsigned long settling_start_time = 0;
 uint8_t correction_attempts = 0;
-
 StepGenerator stepGen(pins[ACTIVE_JOINT].step);
-
 unsigned long move_start_time = 0;
 unsigned long log_start_time = 0;
 
@@ -177,41 +149,42 @@ struct JointData {
 } joint1;
 
 // ============================================================
+// FUNCTION PROTOTYPES
+// ============================================================
+void logData();
+void printMoveSummary();
+void printStatus();
+float countToAngle(float c);
+float angleToCount(float a);
+float getMotorAngleTotal();
+void pollJoint();
+void updateControlLoop();
+
+// ============================================================
 // SETUP
 // ============================================================
 void setup() {
   Serial.begin(115200);
   while (!Serial && millis() < 3000);
-  
   pinMode(pins[ACTIVE_JOINT].step, OUTPUT);
   pinMode(pins[ACTIVE_JOINT].dir,  OUTPUT);
   pinMode(pins[ACTIVE_JOINT].ena,  OUTPUT);
   digitalWrite(pins[ACTIVE_JOINT].step, LOW);
   digitalWrite(pins[ACTIVE_JOINT].dir,  LOW);
-  
-  // Enable Driver
   digitalWrite(pins[ACTIVE_JOINT].ena,  LOW);
-  
   RS485_SERIAL.begin(RS485_BAUD);
   pinMode(RS485_DE_PIN, OUTPUT);
   digitalWrite(RS485_DE_PIN, LOW);
   
   Serial.println(F("\n╔═══════════════════════════════════════════════════╗"));
-  Serial.println(F("║  PRECISION JOINT CONTROLLER - SAFETY ENHANCED     ║"));
+  Serial.println(F("║  PRECISION JOINT CONTROLLER - HYBRID (INV FIX)    ║"));
   Serial.println(F("╚═══════════════════════════════════════════════════╝\n"));
   
-  // Wait for encoder
   Serial.print(F("Waiting for encoder..."));
-  while (!joint1.dataValid) {
-    pollJoint();
-    delay(10);
-  }
-  
+  while (!joint1.dataValid) { pollJoint(); delay(10); }
   current_position_count = (float)joint1.gearboxCount;
   Serial.println(F(" OK"));
-  Serial.print(F("Initial: "));
-  Serial.print(countToAngle(current_position_count), 2);
-  Serial.println(F("°\n"));
+  Serial.print(F("Initial: ")); Serial.print(countToAngle(current_position_count), 2); Serial.println(F("°"));
   Serial.println(F("Ready! Try: M 150"));
 }
 
@@ -221,385 +194,180 @@ void setup() {
 void loop() {
   static unsigned long lastPoll = 0;
   static unsigned long lastLog = 0;
-  
   processCommands();
-  
-  if (millis() - lastPoll >= 50) {
+  if (millis() - lastPoll >= 20) {
     pollJoint();
-    
-    // SAFETY CHECK: Comms Watchdog
-    if (millis() - joint1.lastUpdate > COMMS_TIMEOUT) {
-      emergencyStop("COMMS LOST");
-    }
-    
-    if (joint1.dataValid && move_active && state != HOLDING && state != ERROR_STOP) {
-      updateControlLoop();
-    }
-    
+    if (joint1.dataValid && move_active && state != HOLDING) updateControlLoop();
+    else if (state == HOLDING) stepGen.stop();
     lastPoll = millis();
   }
-  
   if (millis() - lastLog >= 100) {
-    if (state != HOLDING && state != ERROR_STOP && move_active) {
-      logData();
-    }
+    if (state != HOLDING && move_active) logData();
     lastLog = millis();
   }
 }
 
-// ============================================================
-// SAFETY HELPER
-// ============================================================
-void emergencyStop(const char* reason) {
-  stepGen.stop();
-  current_velocity = 0.0;
-  state = ERROR_STOP;
-  move_active = false;
-  Serial.print(F("\n!!! EMERGENCY STOP: "));
-  Serial.println(reason);
+float getMotorAngleTotal() {
+  float raw = (joint1.motorCount / 4096.0) * 360.0;
+  return (joint1.motorRotations * 360.0) + raw;
 }
 
-// ============================================================
-// COMMANDS
-// ============================================================
 void processCommands() {
   if (!Serial.available()) return;
-  
-  String cmd = Serial.readStringUntil('\n');
-  cmd.trim();
-  if (cmd.length() == 0) return;
-  
-  char cmd_type = cmd.charAt(0);
-  
-  switch(cmd_type) {
-    case 'M': {
-      if (state == ERROR_STOP) {
-        Serial.println(F("Error state. Reset required (Use 'R' to reset error)"));
-        break;
-      }
-      float angle = cmd.substring(2).toFloat();
-      // SAFETY CHECK: Software Limits
-      if (angle < SOFT_LIMIT_MIN || angle > SOFT_LIMIT_MAX) {
-        Serial.println(F("Error: Target out of soft limits"));
-      } else {
-        moveToAngle(angle);
-      }
-      break;
-    }
-    case 'R': { // Reset Error / Relative Move
-      if (state == ERROR_STOP) {
-        state = HOLDING;
-        Serial.println(F("Error Cleared. System Ready."));
-      } else {
-        float delta = cmd.substring(2).toFloat();
-        moveRelative(delta);
-      }
-      break;
-    }
-    case 'S': {
-      stepGen.stop();
-      current_velocity = 0.0;
-      state = HOLDING;
-      move_active = false;
-      digitalWrite(pins[ACTIVE_JOINT].ena, LOW);
-      Serial.println(F("STOPPED"));
-      break;
-    }
-    case 'X': {
-      stepGen.stop();
-      current_velocity = 0.0;
-      state = HOLDING;
-      move_active = false;
-      digitalWrite(pins[ACTIVE_JOINT].ena, HIGH);
-      Serial.println(F("MOTOR DISABLED (RELAXED)"));
-      break;
-    }
-    case 'Q': {
-      pollJoint();
-      if (joint1.dataValid) {
-        current_position_count = (float)joint1.gearboxCount;
-        Serial.print(F("Position: "));
-        Serial.print(countToAngle(current_position_count), 3);
-        Serial.println(F("°"));
-      }
-      break;
-    }
-    case 'T': {
-      printStatus();
-      break;
-    }
-  }
+  String cmd = Serial.readStringUntil('\n'); cmd.trim(); if (cmd.length() == 0) return;
+  char t = cmd.charAt(0);
+  if (t == 'M') moveToAngle(cmd.substring(2).toFloat());
+  else if (t == 'R') moveRelative(cmd.substring(2).toFloat());
+  else if (t == 'S') { stepGen.stop(); state = HOLDING; move_active = false; digitalWrite(pins[ACTIVE_JOINT].ena, LOW); Serial.println(F("STOPPED")); }
+  else if (t == 'X') { stepGen.stop(); state = HOLDING; move_active = false; digitalWrite(pins[ACTIVE_JOINT].ena, HIGH); Serial.println(F("RELAXED")); }
+  else if (t == 'Q') { pollJoint(); Serial.print(F("Pos: ")); Serial.println(countToAngle(current_position_count), 3); }
+  else if (t == 'T') printStatus();
 }
 
 void moveToAngle(float target_degrees) {
   digitalWrite(pins[ACTIVE_JOINT].ena, LOW);
-  
   target_count = angleToCount(target_degrees);
-  state = IDLE;
-  current_velocity = 0.0;
-  stepGen.resetSteps();
-  move_start_time = millis();
-  log_start_time = millis();
-  move_active = true;
-  last_error_degrees = 999.0;
-  correction_attempts = 0;
+  target_angle_gb = target_degrees;
+  float current_gb = countToAngle(joint1.gearboxCount);
+  float delta_gb = target_degrees - current_gb;
+  if (delta_gb > 180.0) delta_gb -= 360.0;
+  if (delta_gb < -180.0) delta_gb += 360.0;
   
-  Serial.print(F("\nMoving to "));
-  Serial.print(target_degrees, 2);
-  Serial.println(F("°\n"));
+  float current_mot = getMotorAngleTotal();
+  // SIGN CORRECTION HERE:
+  target_angle_motor = current_mot + (delta_gb * GEAR_RATIO * MOTOR_DIRECTION_SIGN);
+  
+  state = IDLE; current_velocity = 0.0; stepGen.resetSteps();
+  move_start_time = millis(); log_start_time = millis(); move_active = true;
+  last_error_degrees = 999.0; correction_attempts = 0;
+  Serial.print(F("\nMoving to ")); Serial.print(target_degrees, 2); Serial.println(F("°"));
 }
 
-void moveRelative(float delta_degrees) {
-  if (state == ERROR_STOP) return;
-  float current_angle = countToAngle(current_position_count);
-  moveToAngle(current_angle + delta_degrees);
-}
+void moveRelative(float delta) { moveToAngle(countToAngle(joint1.gearboxCount) + delta); }
+float angleToCount(float a) { while(a<0)a+=360; while(a>=360)a-=360; return (a/360.0)*4096.0; }
+float countToAngle(float c) { while(c<0)c+=4096; while(c>=4096)c-=4096; return (c/4096.0)*360.0; }
+void setDirection(bool cw) { digitalWriteFast(pins[ACTIVE_JOINT].dir, cw ? HIGH : LOW); delayMicroseconds(5); }
 
-float angleToCount(float angle_degrees) {
-  while (angle_degrees < 0.0) angle_degrees += 360.0;
-  while (angle_degrees >= 360.0) angle_degrees -= 360.0;
-  return (angle_degrees / 360.0) * 4096.0;
-}
-
-float countToAngle(float count) {
-  while (count < 0.0) count += 4096.0;
-  while (count >= 4096.0) count -= 4096.0;
-  return (count / 4096.0) * 360.0;
-}
-
-void setDirection(bool clockwise) {
-  digitalWriteFast(pins[ACTIVE_JOINT].dir, clockwise ? HIGH : LOW);
-  delayMicroseconds(5);
-}
-
-// ============================================================
-// CONTROL LOOP
-// ============================================================
 void updateControlLoop() {
   current_position_count = (float)joint1.gearboxCount;
+  current_angle_gb = countToAngle(current_position_count);
+  current_angle_motor = getMotorAngleTotal();
   
-  position_error_counts = target_count - current_position_count;
-  if (position_error_counts > 2048.0) position_error_counts -= 4096.0;
-  if (position_error_counts < -2048.0) position_error_counts += 4096.0;
+  float error_gb = target_angle_gb - current_angle_gb;
+  if (error_gb > 180.0) error_gb -= 360.0;
+  if (error_gb < -180.0) error_gb += 360.0;
   
-  float error_degrees = (position_error_counts / 4096.0) * 360.0;
-  float distance_remaining = abs(error_degrees);
+  float effective_error;
+  bool use_fine_mode = false;
   
-  // SAFETY CHECK: Following Error
-  // Note: This is a basic check. For true dynamic following error, we'd need a 
-  // planned trajectory to compare against. For now, we check if we are wildly off
-  // during steady state or if error INCREASES significantly during expected approach.
-  if (distance_remaining > 180.0) { // Sanity check for wraparound glitches
-     // Valid large moves are handled, but sudden 180 jumps are errors
-  }
-  
-  // SETTLING
-  if (state == SETTLING) {
-    current_velocity = 0.0;
-    stepGen.stop();
+  if (abs(error_gb) > HYBRID_SWITCH_THRESHOLD) {
+    effective_error = error_gb;
+  } else {
+    // RE-SYNC TARGET IF ENTERING FINE MODE
+    // Recalculate target dynamically to lock it to Gearbox Truth
+    float ideal_motor_target = current_angle_motor + (error_gb * GEAR_RATIO * MOTOR_DIRECTION_SIGN);
+    target_angle_motor = ideal_motor_target;
     
+    float error_mot = target_angle_motor - current_angle_motor;
+    // Convert motor error back to output frame
+    effective_error = error_mot / (GEAR_RATIO * MOTOR_DIRECTION_SIGN);
+    use_fine_mode = true;
+  }
+  
+  // For Logging
+  position_error_counts = (effective_error / 360.0) * 4096.0;
+  float distance_remaining = abs(effective_error);
+  
+  if (state == SETTLING) {
+    stepGen.stop(); current_velocity = 0.0;
     if (millis() - settling_start_time >= SETTLING_DURATION) {
-      float final_error = abs(error_degrees);
-      
-      if (final_error <= PRECISION_THRESHOLD) {
-        state = HOLDING;
-        move_active = false;
-        printMoveSummary();
-        return;
-      }
-      else if (final_error > MAX_ACCEPTABLE_ERROR && correction_attempts < MAX_CORRECTION_ATTEMPTS) {
+      if (distance_remaining <= PRECISION_THRESHOLD) { state = HOLDING; move_active = false; printMoveSummary(); return; }
+      else if (correction_attempts < MAX_CORRECTION_ATTEMPTS) {
         correction_attempts++;
-        Serial.print(F("→ Correction #"));
-        Serial.print(correction_attempts);
-        Serial.print(F(": Error = "));
-        Serial.print(error_degrees, 2);
-        Serial.println(F("°"));
-        
+        Serial.print(F("→ Correction #")); Serial.print(correction_attempts);
+        Serial.print(F(": Error = ")); Serial.print(effective_error, 4); Serial.println(F("°"));
         state = CORRECTING;
-        direction_cw = (position_error_counts > 0.0);
+        direction_cw = (effective_error > 0.0);
         setDirection(direction_cw);
-      }
-      else {
-        state = HOLDING;
-        move_active = false;
-        if (correction_attempts >= MAX_CORRECTION_ATTEMPTS) {
-          Serial.print(F("⚠ Max corrections. Error: "));
-          Serial.print(error_degrees, 2);
-          Serial.println(F("°"));
-        }
-        printMoveSummary();
-        return;
+      } else {
+        state = HOLDING; move_active = false;
+        Serial.print(F("⚠ Max corrections. Error: ")); Serial.print(effective_error, 3); Serial.println(F("°"));
+        printMoveSummary(); return;
       }
     }
     return;
   }
   
-  // DEADZONE CHECK
-  if (abs(error_degrees) < DEADZONE && 
-      (state == DECELERATING || state == CORRECTING || state == ACCELERATING || state == CRUISING)) {
-    current_velocity = 0.0;
-    stepGen.stop();
-    state = SETTLING;
-    settling_start_time = millis();
-    if (correction_attempts == 0) {
-      Serial.println(F("→ Entering settling phase..."));
-    }
+  if (distance_remaining < DEADZONE && state != CORRECTING) {
+    stepGen.stop(); current_velocity = 0.0; state = SETTLING; settling_start_time = millis();
+    if (correction_attempts == 0) Serial.println(F("→ Entering settling phase..."));
     return;
   }
   
-  // OVERSHOOT DETECTION
   if (abs(last_error_degrees) > DEADZONE && abs(last_error_degrees) < 999.0) {
-    if ((last_error_degrees > 0 && error_degrees < 0) || 
-        (last_error_degrees < 0 && error_degrees > 0)) {
-      Serial.print(F("⚠ Overshoot! Error: "));
-      Serial.print(error_degrees, 2);
-      Serial.println(F("°"));
-      current_velocity = 0.0;
-      stepGen.stop();
-      state = SETTLING;
-      settling_start_time = millis();
-      return;
+    if ((last_error_degrees > 0 && effective_error < 0) || (last_error_degrees < 0 && effective_error > 0)) {
+      Serial.println(F("⚠ Overshoot. Stopping.")); stepGen.stop(); state = SETTLING; settling_start_time = millis(); return;
     }
   }
+  last_error_degrees = effective_error;
   
-  last_error_degrees = error_degrees;
-  
-  // MOTION PROFILE
-  float max_decel_distance = (MAX_VELOCITY * MAX_VELOCITY) / (2.0 * ACCELERATION);
-  float decel_start_distance = max_decel_distance * DECEL_SAFETY_FACTOR;
-  
+  float max_decel_dist = (MAX_VELOCITY * MAX_VELOCITY) / (2.0 * ACCELERATION);
+  float decel_start_distance = max_decel_dist * DECEL_SAFETY_FACTOR;
+
   if (state == CORRECTING) {
     current_velocity = CORRECTION_SPEED;
-    if (distance_remaining < 1.0) current_velocity = 0.5;
-  }
-  else if (state == IDLE) {
-    direction_cw = (position_error_counts > 0.0);
-    setDirection(direction_cw);
-    current_velocity = 0.0;
-    state = ACCELERATING;
-  }
-  else if (state == ACCELERATING) {
-    current_velocity += ACCELERATION * 0.05;
-    
-    if (current_velocity >= MAX_VELOCITY) {
-      current_velocity = MAX_VELOCITY;
-      state = CRUISING;
-    }
-    
-    if (distance_remaining <= decel_start_distance) {
-      state = DECELERATING;
-    }
-  }
-  else if (state == CRUISING) {
+    if (distance_remaining < 0.5) current_velocity = 0.5;
+  } else if (state == IDLE) {
+    direction_cw = (effective_error > 0.0); setDirection(direction_cw); current_velocity = 0.0; state = ACCELERATING;
+  } else if (state == ACCELERATING) {
+    current_velocity += ACCELERATION * 0.02;
+    if (current_velocity >= MAX_VELOCITY) { current_velocity = MAX_VELOCITY; state = CRUISING; }
+    if (distance_remaining <= decel_start_distance) state = DECELERATING;
+  } else if (state == CRUISING) {
     current_velocity = MAX_VELOCITY;
-    
-    if (distance_remaining <= decel_start_distance) {
-      state = DECELERATING;
-    }
-  }
-  else if (state == DECELERATING) {
-    current_velocity -= ACCELERATION * 0.05;
-    
-    float min_speed;
-    if (distance_remaining > 10.0) {
-      min_speed = MIN_SPEED_FAR;
-    } else if (distance_remaining > 5.0) {
-      min_speed = MIN_SPEED_NEAR;
-    } else {
-      min_speed = MIN_SPEED_CLOSE;
-    }
-    
-    if (current_velocity < min_speed) {
-      current_velocity = min_speed;
-    }
-  }
-  else if (state == HOLDING) {
-    current_velocity = 0.0;
-    stepGen.stop();
-    return;
-  }
+    if (distance_remaining <= decel_start_distance) state = DECELERATING;
+  } else if (state == DECELERATING) {
+    current_velocity -= ACCELERATION * 0.02;
+    float min_speed = MIN_SPEED_FAR;
+    if (use_fine_mode) min_speed = MIN_SPEED_CLOSE; else if (distance_remaining < 5.0) min_speed = MIN_SPEED_NEAR;
+    if (current_velocity < min_speed) current_velocity = min_speed;
+  } else if (state == HOLDING) { stepGen.stop(); return; }
   
   stepGen.setSpeed(current_velocity);
 }
 
-// ============================================================
-// RS485 & LOGGING
-// ============================================================
 void pollJoint() {
-  digitalWrite(RS485_DE_PIN, LOW);
-  delayMicroseconds(100);
-  
-  uint8_t pollMsg[6];
-  pollMsg[0] = 0x02;
-  pollMsg[1] = JOINT_ID;
-  pollMsg[2] = 0x06;
-  
-  crc.restart();
-  crc.add(pollMsg[0]);
-  crc.add(pollMsg[1]);
-  crc.add(pollMsg[2]);
-  uint16_t calcCRC = crc.calc();
-  pollMsg[3] = (calcCRC >> 8) & 0xFF;
-  pollMsg[4] = calcCRC & 0xFF;
-  pollMsg[5] = 0x03;
-  
-  while (RS485_SERIAL.available()) RS485_SERIAL.read();
-  
-  digitalWrite(RS485_DE_PIN, HIGH);
-  delayMicroseconds(100);
-  RS485_SERIAL.write(pollMsg, 6);
-  RS485_SERIAL.flush();
-  delayMicroseconds(100);
-  digitalWrite(RS485_DE_PIN, LOW);
-  
-  uint8_t response[13];
-  if (receiveResponse(response, 13, 200)) {
-    parseResponse(response);
-  }
+  digitalWrite(RS485_DE_PIN, LOW); delayMicroseconds(100);
+  uint8_t msg[6] = {0x02, JOINT_ID, 0x06, 0, 0, 0x03};
+  crc.restart(); crc.add(msg[0]); crc.add(msg[1]); crc.add(msg[2]);
+  uint16_t c = crc.calc(); msg[3]=c>>8; msg[4]=c&0xFF;
+  while(RS485_SERIAL.available()) RS485_SERIAL.read();
+  digitalWrite(RS485_DE_PIN, HIGH); delayMicroseconds(100);
+  RS485_SERIAL.write(msg, 6); RS485_SERIAL.flush();
+  delayMicroseconds(100); digitalWrite(RS485_DE_PIN, LOW);
+  uint8_t r[13]; if(receiveResponse(r, 13, 200)) parseResponse(r);
 }
-
-bool receiveResponse(uint8_t *response, size_t length, unsigned long timeoutMs) {
-  unsigned long startTime = millis();
-  size_t index = 0;
-  bool gotSTX = false;
-  
-  while (millis() - startTime < timeoutMs && index < length) {
-    if (RS485_SERIAL.available()) {
-      uint8_t byte = RS485_SERIAL.read();
-      if (!gotSTX) {
-        if (byte == 0x02) {
-          gotSTX = true;
-          response[index++] = byte;
-        }
-      } else {
-        response[index++] = byte;
-      }
+bool receiveResponse(uint8_t *r, size_t len, unsigned long to) {
+  unsigned long s=millis(); size_t i=0; bool stx=false;
+  while(millis()-s<to && i<len) {
+    if(RS485_SERIAL.available()) {
+      uint8_t b=RS485_SERIAL.read();
+      if(!stx && b==0x02) { stx=true; r[i++]=b; } else if(stx) r[i++]=b;
     }
-  }
-  
-  return (index == length && gotSTX && response[length-1] == 0x03);
+  } return (i==len && r[len-1]==0x03);
 }
-
 void parseResponse(uint8_t *r) {
-  if (r[0] != 0x02 || r[12] != 0x03) return;
-  
-  crc.restart();
-  for (int i = 0; i <= 9; i++) crc.add(r[i]);
-  uint16_t calcCRC = crc.calc();
-  uint16_t recvCRC = ((uint16_t)r[10] << 8) | r[11];
-  
-  if (calcCRC != recvCRC) return;
-  
-  joint1.motorCount = ((uint16_t)r[2] << 8) | r[3];
-  joint1.motorRotations = ((int16_t)r[4] << 8) | r[5];
-  joint1.gearboxCount = ((uint16_t)r[6] << 8) | r[7];
-  joint1.limitSwitch1 = (r[8] & 0x01) != 0;
-  joint1.limitSwitch2 = (r[8] & 0x02) != 0;
-  joint1.statusByte = r[9];
-  joint1.dataValid = true;
-  joint1.lastUpdate = millis();
+  crc.restart(); for(int i=0; i<=9; i++) crc.add(r[i]);
+  if(crc.calc()!=(((uint16_t)r[10]<<8)|r[11])) return;
+  joint1.motorCount=((uint16_t)r[2]<<8)|r[3];
+  joint1.motorRotations=((int16_t)r[4]<<8)|r[5];
+  joint1.gearboxCount=((uint16_t)r[6]<<8)|r[7];
+  joint1.statusByte=r[9]; joint1.dataValid=true; joint1.lastUpdate=millis();
 }
 
+// ============================================================
+// PRINT FUNCTIONS (RESTORED)
+// ============================================================
 void logData() {
   if (!joint1.dataValid) return;
   
@@ -616,7 +384,6 @@ void logData() {
     case SETTLING: stateStr = "SETTLING"; break;
     case CORRECTING: stateStr = "CORRECT"; break;
     case HOLDING: stateStr = "HOLD"; break;
-    case ERROR_STOP: stateStr = "ESTOP"; break;
     default: stateStr = "?"; break;
   }
   
@@ -680,7 +447,6 @@ void printStatus() {
     case SETTLING: Serial.println(F("SETTLING")); break;
     case CORRECTING: Serial.println(F("CORRECTING")); break;
     case HOLDING: Serial.println(F("HOLDING")); break;
-    case ERROR_STOP: Serial.println(F("ERROR_STOP")); break;
   }
   Serial.println();
 }
