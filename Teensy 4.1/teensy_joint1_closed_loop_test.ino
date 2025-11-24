@@ -24,20 +24,20 @@ const float GEARBOX_STEPS_PER_DEGREE = (MOTOR_STEPS_PER_REV / 360.0) * GEAR_RATI
 // MOTION PARAMETERS
 // ============================================================
 const float MAX_VELOCITY = 40.0;
-const float ACCELERATION = 100.0; // was 8
+const float ACCELERATION = 100.0; // was 80
 const float DECEL_SAFETY_FACTOR = 2.0;
 
 // >>> ULTRA PRECISION SETTINGS <<<
-const float DEADZONE = 0.010;              // 5 thousandths of a degree
+const float DEADZONE = 0.050;              // 5 thousandths of a degree
 const float PRECISION_THRESHOLD = 0.01;    // Target: +/- 0.01 degree
 const float HYBRID_SWITCH_THRESHOLD = 2.0; 
 
 const float MAX_ACCEPTABLE_ERROR = 0.5;
-const float CORRECTION_SPEED = 1;        // Slower correction for micro-steps
+const float CORRECTION_SPEED = 1.5;        // 1- Slower correction for micro-steps
 
 const float MIN_SPEED_FAR = 8.0;
 const float MIN_SPEED_NEAR = 4.0;
-const float MIN_SPEED_CLOSE = 1;         // Crawl speed for final micron-landing
+const float MIN_SPEED_CLOSE = 1;         // 1 Crawl speed for final micron-landing
 
 const unsigned long SETTLING_DURATION = 150; // Slightly longer to settle vibration
 const uint8_t MAX_CORRECTION_ATTEMPTS = 5;   // More attempts allowed for high precision
@@ -182,6 +182,9 @@ void setup() {
 void loop() {
   static unsigned long lastPoll = 0;
   static unsigned long lastLog = 0;
+
+  updateTestManager();
+
   processCommands();
   if (millis() - lastPoll >= 20) {
     pollJoint();
@@ -223,6 +226,27 @@ void processCommands() {
   else if (t == 'X') { stepGen.stop(); state = HOLDING; move_active = false; digitalWrite(pins[ACTIVE_JOINT].ena, HIGH); Serial.println(F("RELAXED")); }
   else if (t == 'Q') { pollJoint(); printStatus(); }
   else if (t == 'T') printStatus();
+  else if (t == 'Z') {
+    // Format: Z <cycles> <side>
+    // Example: "Z 10 1" (10 cycles, Positive side)
+    // Example: "Z 5 -1" (5 cycles, Negative side)
+    
+    int firstSpace = cmd.indexOf(' ');
+    int secondSpace = cmd.indexOf(' ', firstSpace + 1);
+    
+    int cycles = 5;
+    int side = 1; // Default to Positive if not specified
+    
+    if (firstSpace > 0) {
+      if (secondSpace > 0) {
+        cycles = cmd.substring(firstSpace + 1, secondSpace).toInt();
+        side = cmd.substring(secondSpace + 1).toInt();
+      } else {
+        cycles = cmd.substring(firstSpace + 1).toInt();
+      }
+    }
+    startAccuracyTest(cycles, side);
+  }
 }
 
 void moveToAngle(float target_degrees) {
@@ -249,10 +273,18 @@ float countToAngle(float c) { while(c<0)c+=4096; while(c>=4096)c-=4096; return (
 void setDirection(bool cw) { digitalWriteFast(pins[ACTIVE_JOINT].dir, cw ? HIGH : LOW); delayMicroseconds(5); }
 
 void updateControlLoop() {
+  // --- STATIC VARIABLES ---
+  static unsigned long zero_error_start_time = 0;
+  static float last_stable_position = 0.0;
+  static unsigned long position_hold_timer = 0;
+  static unsigned long correction_move_start_time = 0; // NEW: Track when correction started
+
+  // --- READ SENSORS ---
   current_position_count = (float)joint1.gearboxCount;
   current_angle_gb = countToAngle(current_position_count);
-  current_angle_motor = getMotorAngleTotal();
+  current_angle_motor = getMotorAngleTotal() * -1.0; 
   
+  // --- CALCULATE ERRORS ---
   float error_gb = target_angle_gb - current_angle_gb;
   if (error_gb > 180.0) error_gb -= 360.0;
   if (error_gb < -180.0) error_gb += 360.0;
@@ -272,18 +304,73 @@ void updateControlLoop() {
   
   position_error_counts = (effective_error / 360.0) * 4096.0;
   float distance_remaining = abs(effective_error);
+
+  // ============================================================
+  // 1. INSTANT "TARGET LOCK"
+  // ============================================================
+  if (distance_remaining < 0.005) { 
+      if (zero_error_start_time == 0) zero_error_start_time = millis();
+      if (millis() - zero_error_start_time > 50) {
+          if (state != HOLDING) {
+              stepGen.stop(); 
+              current_velocity = 0.0; 
+              state = HOLDING; 
+              move_active = false; 
+              Serial.println(F("→ Target Lock (Zero Error). Stop."));
+              printMoveSummary();
+          }
+          return;
+      }
+  } else {
+      zero_error_start_time = 0;
+  }
+
+  // ============================================================
+  // 2. STALL DETECTION
+  // ============================================================
+  if (state == CORRECTING) {
+      if (abs(current_angle_gb - last_stable_position) < 0.002) {
+          if (millis() - position_hold_timer > 1000) { 
+             Serial.println(F("⚠ STALL DETECTED: Forcing Finish."));
+             stepGen.stop(); state = HOLDING; move_active = false; printMoveSummary(); return;
+          }
+      } else {
+          last_stable_position = current_angle_gb;
+          position_hold_timer = millis();
+      }
+  } else {
+      position_hold_timer = millis();
+      last_stable_position = current_angle_gb;
+  }
+
+  // ============================================================
+  // 3. NORMAL STATE MACHINE
+  // ============================================================
+  
+  // Entering Settling
+  if (distance_remaining < DEADZONE && state != SETTLING && state != HOLDING) {
+      stepGen.stop(); current_velocity = 0.0; state = SETTLING; settling_start_time = millis();
+      if (correction_attempts == 0) Serial.println(F("→ Entering settling phase..."));
+      return;
+  }
   
   if (state == SETTLING) {
     stepGen.stop(); current_velocity = 0.0;
     if (millis() - settling_start_time >= SETTLING_DURATION) {
-      if (distance_remaining <= PRECISION_THRESHOLD) { state = HOLDING; move_active = false; printMoveSummary(); return; }
+      if (distance_remaining <= PRECISION_THRESHOLD) { 
+        state = HOLDING; move_active = false; printMoveSummary(); return; 
+      }
       else if (correction_attempts < MAX_CORRECTION_ATTEMPTS) {
         correction_attempts++;
         Serial.print(F("→ Correction #")); Serial.print(correction_attempts);
         Serial.print(F(": Err:")); Serial.println(effective_error, 4);
         state = CORRECTING;
-        direction_cw = (effective_error > 0.0);
-        setDirection(direction_cw);
+        correction_move_start_time = millis(); // >>> NEW: Timestamp start of correction move
+        
+        bool need_positive = (effective_error > 0.0);
+        if (MOTOR_DIRECTION_SIGN == -1) direction_cw = need_positive;
+        else direction_cw = !need_positive;
+        setDirection(direction_cw); 
       } else {
         state = HOLDING; move_active = false;
         Serial.print(F("⚠ Max corrections. Error: ")); Serial.print(effective_error, 4); Serial.println(F("°"));
@@ -293,34 +380,40 @@ void updateControlLoop() {
     return;
   }
   
-  if (distance_remaining < DEADZONE && state != CORRECTING) {
-    stepGen.stop(); current_velocity = 0.0; state = SETTLING; settling_start_time = millis();
-    if (correction_attempts == 0) Serial.println(F("→ Entering settling phase..."));
-    return;
-  }
-  
+  // ============================================================
+  // OVERSHOOT PROTECTION (WITH GRACE PERIOD)
+  // ============================================================
   if (abs(last_error_degrees) > DEADZONE && abs(last_error_degrees) < 999.0) {
-    if ((last_error_degrees > 0 && effective_error < 0) || (last_error_degrees < 0 && effective_error > 0)) 
-    {
-      if (abs(effective_error) > PRECISION_THRESHOLD) {
-          Serial.println(F("⚠ Overshoot. Stopping."));
-          stepGen.stop();
-          state = SETTLING;
-          settling_start_time = millis();
-          return;
+    if ((last_error_degrees > 0 && effective_error < 0) || (last_error_degrees < 0 && effective_error > 0)) {
+      
+      // >>> FIX: GRACE PERIOD <<<
+      // Only trigger overshoot stop if we have been moving for > 100ms.
+      // This allows the motor to cross the backlash gap without false triggering.
+      if (state != CORRECTING || (millis() - correction_move_start_time > 250)) {
+          if (abs(effective_error) > PRECISION_THRESHOLD) {
+              Serial.println(F("⚠ Overshoot. Stopping."));
+              stepGen.stop(); state = SETTLING; settling_start_time = millis(); return;
+          }
       }
     }
   }
   last_error_degrees = effective_error;
   
+  // Velocity Profiles
   float max_decel_dist = (MAX_VELOCITY * MAX_VELOCITY) / (2.0 * ACCELERATION);
   float decel_start_distance = max_decel_dist * DECEL_SAFETY_FACTOR;
 
+  // Direction Logic
+  bool need_positive = (effective_error > 0.0);
+  if (MOTOR_DIRECTION_SIGN == -1) direction_cw = need_positive;
+  else direction_cw = !need_positive;
+
   if (state == CORRECTING) {
     current_velocity = CORRECTION_SPEED;
-    if (distance_remaining < 0.02) current_velocity = 0.2; // Ultra-fine crawl
+    if (distance_remaining < 0.02) current_velocity = 0.2; 
   } else if (state == IDLE) {
-    direction_cw = (effective_error > 0.0); setDirection(direction_cw); current_velocity = 0.0; state = ACCELERATING;
+    setDirection(direction_cw); 
+    current_velocity = 0.0; state = ACCELERATING;
   } else if (state == ACCELERATING) {
     current_velocity += ACCELERATION * 0.02;
     if (current_velocity >= MAX_VELOCITY) { current_velocity = MAX_VELOCITY; state = CRUISING; }
@@ -337,6 +430,12 @@ void updateControlLoop() {
   
   stepGen.setSpeed(current_velocity);
 }
+
+
+
+
+
+
 
 void pollJoint() {
   digitalWrite(RS485_DE_PIN, LOW); delayMicroseconds(100);
@@ -375,7 +474,7 @@ void logData() {
   
   // Logic to display High Res position in logs
   float gb_coarse = countToAngle(current_position_count);
-  float mot_fine_relative = getHighResOutputAngle(); // Raw High Res angle
+  // float mot_fine_relative = getHighResOutputAngle(); // Raw High Res angle
   
   // We print the Gearbox (Absolute) but calculated error is High Res
   float effective_error = (position_error_counts / 4096.0) * 360.0;
@@ -449,3 +548,188 @@ void printStatus() {
   }
   Serial.println();
 }
+
+
+
+
+
+
+// ============================================================
+// ADVANCED METROLOGY TEST MANAGER
+// ============================================================
+
+struct TestMetric {
+  uint16_t cycle_num;
+  int8_t   direction;        // 1 = Returning from Positive, -1 = Returning from Negative
+  float    start_angle;
+  uint16_t start_raw_count;
+  float    end_angle;
+  uint16_t end_raw_count;
+  float    target_angle;
+  float    final_error_deg;
+  float    final_error_counts;
+  unsigned long duration;
+  uint8_t  corrections;
+};
+
+// Configuration
+const int MAX_TEST_CYCLES = 50; 
+TestMetric test_data[MAX_TEST_CYCLES];
+int test_total_cycles = 0;
+int test_current_cycle = 0;
+bool test_active = false;
+unsigned long test_dwell_timer = 0;
+const unsigned long DWELL_TIME_MS = 1500; // Slightly faster dwell to speed up testing
+
+// 1=Pos Only, -1=Neg Only, 0=Mixed
+int test_side_constraint = 1; 
+
+enum TestState { T_IDLE, T_MOVING_OUT, T_MOVING_HOME, T_MEASURING };
+TestState tState = T_IDLE;
+
+void startAccuracyTest(int cycles, int side) {
+  if (cycles > MAX_TEST_CYCLES) cycles = MAX_TEST_CYCLES;
+  if (cycles < 1) cycles = 1;
+  
+  test_total_cycles = cycles;
+  test_current_cycle = 0;
+  test_active = true;
+  test_side_constraint = side; 
+  tState = T_MOVING_OUT;
+  
+  Serial.println(F("\n══════════════════════════════════════════════════════════════════════"));
+  Serial.print(F("⚠ INITIALIZING METROLOGY SUITE: ")); Serial.print(cycles); Serial.println(F(" CYCLES"));
+  Serial.print(F("  Constraint: ")); 
+  if (side == 1) Serial.println(F("POSITIVE (+)"));
+  else if (side == -1) Serial.println(F("NEGATIVE (-)"));
+  else Serial.println(F("MIXED"));
+  Serial.println(F("══════════════════════════════════════════════════════════════════════"));
+  
+  triggerRandomMove();
+}
+
+void triggerRandomMove() {
+  long randAngle = random(15, 170); // Good range to test mechanics
+  
+  if (test_side_constraint == 0) { if (random(0, 2) == 1) randAngle *= -1; } 
+  else if (test_side_constraint == -1) { randAngle = -1 * abs(randAngle); }
+  else { randAngle = abs(randAngle); }
+  
+  Serial.print(F("\n[CYCLE ")); Serial.print(test_current_cycle + 1); 
+  Serial.print(F("/")); Serial.print(test_total_cycles);
+  Serial.print(F("] Moving to Start Position: ")); Serial.println(randAngle);
+  
+  tState = T_MOVING_OUT;
+  moveToAngle((float)randAngle);
+}
+
+void updateTestManager() {
+  if (!test_active) return;
+  if (state != HOLDING) return; // Wait for motion to stop
+
+  switch (tState) {
+    case T_MOVING_OUT:
+      delay(100); // Mechanical settling
+      
+      // --- CAPTURE START CONDITIONS ---
+      test_data[test_current_cycle].cycle_num = test_current_cycle + 1;
+      test_data[test_current_cycle].start_angle = countToAngle(joint1.gearboxCount);
+      test_data[test_current_cycle].start_raw_count = joint1.gearboxCount;
+      
+      // Determine return direction
+      if (test_data[test_current_cycle].start_angle > 0) test_data[test_current_cycle].direction = -1;
+      else test_data[test_current_cycle].direction = 1;
+      
+      Serial.print(F(">> Returning to 0.000° from "));
+      Serial.print(test_data[test_current_cycle].start_angle, 2);
+      Serial.println(F("°..."));
+      
+      tState = T_MOVING_HOME;
+      test_data[test_current_cycle].target_angle = 0.0000;
+      moveToAngle(0.000);
+      break;
+
+    case T_MOVING_HOME: { // <--- ADDED BRACE HERE
+      // --- CAPTURE END CONDITIONS ---
+      test_data[test_current_cycle].end_angle = countToAngle(joint1.gearboxCount);
+      test_data[test_current_cycle].end_raw_count = joint1.gearboxCount;
+      
+      // Calculate Exact Errors
+      float err_deg = (position_error_counts / 4096.0) * 360.0;
+      test_data[test_current_cycle].final_error_deg = err_deg;
+      test_data[test_current_cycle].final_error_counts = position_error_counts;
+      
+      test_data[test_current_cycle].duration = millis() - move_start_time;
+      test_data[test_current_cycle].corrections = correction_attempts;
+      
+      Serial.print(F(">> ARRIVED. Err: ")); 
+      Serial.print(err_deg, 4);
+      Serial.println(F("°"));
+      
+      test_dwell_timer = millis();
+      tState = T_MEASURING;
+      break; 
+    } // <--- ADDED CLOSING BRACE HERE
+
+    case T_MEASURING:
+      if (millis() - test_dwell_timer >= DWELL_TIME_MS) {
+        test_current_cycle++;
+        if (test_current_cycle >= test_total_cycles) { finishTest(); } 
+        else { triggerRandomMove(); }
+      }
+      break;
+      
+    case T_IDLE: break;
+  }
+}
+
+
+void finishTest() {
+  test_active = false;
+  tState = T_IDLE;
+  
+  Serial.println(F("\n\n══════════════════════════════════════════════════════════════════════════════════"));
+  Serial.println(F("                               METROLOGY REPORT"));
+  Serial.println(F("══════════════════════════════════════════════════════════════════════════════════"));
+  
+  // CSV Friendly Header
+  Serial.println(F("Iter,Dir,Start_Deg,Start_Raw,End_Deg,End_Raw,Target,Err_Deg,Err_Cnt,Time_ms,Corr"));
+  
+  float sum_abs_err = 0; 
+  float max_abs_err = 0; 
+  float sum_time = 0;
+  int perfect_runs = 0;
+  
+  for (int i = 0; i < test_total_cycles; i++) {
+    TestMetric *d = &test_data[i];
+    
+    Serial.print(d->cycle_num); Serial.print(F(","));
+    Serial.print(d->direction > 0 ? "+" : "-"); Serial.print(F(","));
+    Serial.print(d->start_angle, 2); Serial.print(F(","));
+    Serial.print(d->start_raw_count); Serial.print(F(","));
+    Serial.print(d->end_angle, 4); Serial.print(F(","));
+    Serial.print(d->end_raw_count); Serial.print(F(","));
+    Serial.print(d->target_angle, 1); Serial.print(F(","));
+    Serial.print(d->final_error_deg, 5); Serial.print(F(","));
+    Serial.print(d->final_error_counts, 2); Serial.print(F(","));
+    Serial.print(d->duration); Serial.print(F(","));
+    Serial.println(d->corrections);
+    
+    float abs_e = abs(d->final_error_deg);
+    sum_abs_err += abs_e;
+    sum_time += d->duration;
+    if (abs_e > max_abs_err) max_abs_err = abs_e;
+    if (abs_e < 0.001) perfect_runs++;
+  }
+  
+  Serial.println(F("══════════════════════════════════════════════════════════════════════════════════"));
+  Serial.print(F("TOTAL CYCLES:     ")); Serial.println(test_total_cycles);
+  Serial.print(F("PERFECT (0.00°):  ")); Serial.print(perfect_runs); 
+  Serial.print(F(" (")); Serial.print((float)perfect_runs/test_total_cycles*100.0, 1); Serial.println(F("%)"));
+  Serial.println(F("----------------------------------------------------------------------------------"));
+  Serial.print(F("AVG ERROR (ABS):  ")); Serial.print(sum_abs_err / test_total_cycles, 5); Serial.println(F("°"));
+  Serial.print(F("MAX ERROR:        ")); Serial.print(max_abs_err, 5); Serial.println(F("°"));
+  Serial.print(F("AVG TIME:         ")); Serial.print(sum_time / test_total_cycles, 0); Serial.println(F(" ms"));
+  Serial.println(F("══════════════════════════════════════════════════════════════════════════════════"));
+}
+
