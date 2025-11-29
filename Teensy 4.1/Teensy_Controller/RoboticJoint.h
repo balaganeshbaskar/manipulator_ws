@@ -15,9 +15,9 @@ using namespace TeensyTimerTool;
 #define MOTOR_STEPS_PER_REV (200.0 * MICROSTEPS)
 #define GEARBOX_STEPS_PER_DEGREE ((MOTOR_STEPS_PER_REV / 360.0) * GEAR_RATIO)
 
-#define MAX_VELOCITY 40.0
+// #define MAX_VELOCITY 40.0
 #define ACCELERATION 100.0
-#define DECEL_SAFETY_FACTOR 2.0
+#define DECEL_SAFETY_FACTOR 1.4 // was 2
 #define DEADZONE 0.050
 #define PRECISION_THRESHOLD 0.01
 #define HYBRID_SWITCH_THRESHOLD 2.0
@@ -119,6 +119,12 @@ class RoboticJoint {
     void printMoveSummary();
     void printStatus();
 
+    void setMaxVelocity(float speed) {
+        if (speed > 0.1 && speed <= 100.0) { // Safety limits
+            _maxVelocity = speed;
+        }
+    }
+
   private:
     uint8_t _id, _stepPin, _dirPin, _enaPin;
     StepGenerator* stepGen;
@@ -143,12 +149,16 @@ class RoboticJoint {
     uint8_t correction_attempts = 0;
     unsigned long move_start_time = 0;
     unsigned long log_start_time = 0;
+
+    float _maxVelocity = 40.0; // Default start speed
     
     // Helper Functions (EXACT COPY)
     float countToAngle(float c);
     float angleToCount(float a);
     float getMotorAngleTotal(uint16_t motCount, int16_t motRot);
     void setDirection(bool cw);
+    
 };
 
 #endif
+
