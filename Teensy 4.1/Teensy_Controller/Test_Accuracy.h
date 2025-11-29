@@ -37,7 +37,7 @@ class AccuracyTest : public RoboticTest {
       if (_isFinished) return;
       
       // WAIT FOR STABILITY
-      if (_joint->getState() != J_HOLDING) return;
+      if (_joint->getState() != HOLDING) return;
       
       switch (_state) {
         case 1: // WAIT_OUT
@@ -58,7 +58,7 @@ class AccuracyTest : public RoboticTest {
           break;
           
         case 3: // DWELL
-          if (millis() - _dwellStart > 1000) {
+          if (millis() - _dwellStart > 3000) {
             _currentCycle++;
             if (_currentCycle >= _totalCycles) {
                finish();
