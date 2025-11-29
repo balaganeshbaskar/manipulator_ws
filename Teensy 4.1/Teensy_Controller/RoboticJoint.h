@@ -110,6 +110,8 @@ class RoboticJoint {
 
     const char* getStateStr();
     bool isDataValid() { return _dataValid; }
+    bool isMoveActive() { return move_active; }
+
     uint8_t getCorrectionAttempts() { return correction_attempts; }
     uint32_t getSteps() { return stepGen->getSteps(); }
     unsigned long getMoveStartTime() { return move_start_time; }
