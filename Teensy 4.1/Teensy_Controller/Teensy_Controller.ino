@@ -157,6 +157,12 @@ void processCommands() {
     }
     testManager.runTest(new BacklashTest(startAngle, moveAngle, cycles), &joints[ACTIVE_JOINT]);
   }
+  else if (t == 'V') {
+      float newSpeed = cmd.substring(2).toFloat();
+      joints[ACTIVE_JOINT].setMaxVelocity(newSpeed);
+      Serial.print("Max Speed set to: ");
+      Serial.println(newSpeed);
+  }
 }
 
 // ============================================================
@@ -204,18 +210,25 @@ void logData() {
   // float gb_coarse = countToAngle(current_position_count);
   // float effective_error = (position_error_counts / 4096.0) * 360.0;
 
+  
   const char* sStr = joints[ACTIVE_JOINT].getStateStr();
 
-  Serial.print(F("[")); 
-  Serial.print((millis() - joints[ACTIVE_JOINT].getMoveStartTime()) / 1000.0, 1); // Using getMoveStartTime() to approximate log_start_time
-  Serial.print(F("s] T:")); 
-  Serial.print(joints[ACTIVE_JOINT].getTargetAngle(), 2);
-  Serial.print(F("° Pos:")); 
-  Serial.print(joints[ACTIVE_JOINT].getCurrentAngle(), 3); // Still show coarse pos for context
-  Serial.print(F("° Err:")); 
-  Serial.print(joints[ACTIVE_JOINT].getError(), 4); // Show HIGH RES error
-  Serial.print(F("° V:")); 
-  Serial.print(joints[ACTIVE_JOINT].getVelocity(), 1);
-  Serial.print(F(" ")); 
-  Serial.println(sStr);
+  if(joints[ACTIVE_JOINT].getCurrentAngle() != 0.0000)
+  {
+    Serial.print(F("[")); 
+    Serial.print((millis() - joints[ACTIVE_JOINT].getMoveStartTime()) / 1000.0, 1); // Using getMoveStartTime() to approximate log_start_time
+    Serial.print(F("s] T:")); 
+    Serial.print(joints[ACTIVE_JOINT].getTargetAngle(), 2);
+    Serial.print(F("° Pos:")); 
+    Serial.print(joints[ACTIVE_JOINT].getCurrentAngle(), 3); // Still show coarse pos for context
+    Serial.print(F("° Err:")); 
+    Serial.print(joints[ACTIVE_JOINT].getError(), 4); // Show HIGH RES error
+    Serial.print(F("° V:")); 
+    Serial.print(joints[ACTIVE_JOINT].getVelocity(), 1);
+    Serial.print(F(" ")); 
+    Serial.println(sStr);
+  }
+
+  
 }
+
