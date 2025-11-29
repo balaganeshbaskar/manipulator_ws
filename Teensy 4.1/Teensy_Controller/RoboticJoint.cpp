@@ -101,13 +101,14 @@ void RoboticJoint::update() {
   
   if (abs(error_gb) > HYBRID_SWITCH_THRESHOLD) {
     effective_error = error_gb;
-  } else {
+    } else {
     float ideal_motor_target = current_angle_motor + (error_gb * GEAR_RATIO * MOTOR_DIRECTION_SIGN);
-    target_angle_motor = ideal_motor_target;
+    target_angle_motor = ideal_motor_target; // <--- THIS IS THE BUG
     float error_mot = target_angle_motor - current_angle_motor;
     effective_error = error_mot / (GEAR_RATIO * MOTOR_DIRECTION_SIGN);
     use_fine_mode = true;
   }
+
   
   position_error_counts = (effective_error / 360.0) * 4096.0;
   float distance_remaining = abs(effective_error);
@@ -125,6 +126,7 @@ void RoboticJoint::update() {
       stepGen->stop(); 
       return; 
   }
+
 
   // 2. TARGET LOCK (EXIT)
   if (distance_remaining < 0.005) { 
@@ -184,7 +186,7 @@ void RoboticJoint::update() {
   }
   last_error_degrees = effective_error;
   
-  float max_decel_dist = (MAX_VELOCITY * MAX_VELOCITY) / (2.0 * ACCELERATION);
+  float max_decel_dist = (_maxVelocity * _maxVelocity) / (2.0 * ACCELERATION);
   float decel_start_distance = max_decel_dist * DECEL_SAFETY_FACTOR;
 
   // DIRECTION LOGIC
@@ -203,10 +205,10 @@ void RoboticJoint::update() {
     current_velocity = 0.0; state = ACCELERATING;
   } else if (state == ACCELERATING) {
     current_velocity += ACCELERATION * 0.02;
-    if (current_velocity >= MAX_VELOCITY) { current_velocity = MAX_VELOCITY; state = CRUISING; }
+    if (current_velocity >= _maxVelocity) { current_velocity = _maxVelocity; state = CRUISING; }
     if (distance_remaining <= decel_start_distance) state = DECELERATING;
   } else if (state == CRUISING) {
-    current_velocity = MAX_VELOCITY;
+    current_velocity = _maxVelocity;
     if (distance_remaining <= decel_start_distance) state = DECELERATING;
   } else if (state == DECELERATING) {
     current_velocity -= ACCELERATION * 0.02;
@@ -266,6 +268,7 @@ void RoboticJoint::printMoveSummary() {
   Serial.println(F("╚═══════════════════════════════════════╝\n"));
 }
 
+
 void RoboticJoint::printStatus() {
   float current_angle = countToAngle(current_position_count);
   float target_angle = countToAngle(target_count);
@@ -280,3 +283,4 @@ void RoboticJoint::printStatus() {
   Serial.print(F("  State:       ")); Serial.println(getStateStr());
   Serial.println();
 }
+
