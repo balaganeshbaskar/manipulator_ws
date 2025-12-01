@@ -1,0 +1,17 @@
+running develop
+running egg_info
+writing manipulator_test_manager.egg-info/PKG-INFO
+writing dependency_links to manipulator_test_manager.egg-info/dependency_links.txt
+writing entry points to manipulator_test_manager.egg-info/entry_points.txt
+writing requirements to manipulator_test_manager.egg-info/requires.txt
+writing top-level names to manipulator_test_manager.egg-info/top_level.txt
+reading manifest file 'manipulator_test_manager.egg-info/SOURCES.txt'
+writing manifest file 'manipulator_test_manager.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator-test-manager.egg-link (link to .)
+Installing test_manager_node script to /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/manipulator_test_manager
+
+Installed /home/bgb_6342/manipulator_ws/build/manipulator_test_manager
+running symlink_data
+symbolically linking /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/resource/manipulator_test_manager -> /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/ament_index/resource_index/packages
+symbolically linking /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/package.xml -> /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager

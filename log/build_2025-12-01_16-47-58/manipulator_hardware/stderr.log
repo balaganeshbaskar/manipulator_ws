@@ -1,0 +1,2 @@
+/usr/lib/python3/dist-packages/setuptools/command/easy_install.py:355: UserWarning: Unbuilt egg for manipulator-test-manager 0.0.0 (/home/bgb_6342/manipulator_ws/build/manipulator_test_manager)
+  self.local_index = Environment(self.shadow_path + sys.path)

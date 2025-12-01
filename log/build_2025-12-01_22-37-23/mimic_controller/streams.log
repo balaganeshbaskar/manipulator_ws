@@ -1,0 +1,21 @@
+[1.741s] Invoking command in '/home/bgb_6342/manipulator_ws/build/mimic_controller': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build --no-deps symlink_data --force
+[2.164s] running develop
+[2.416s] running egg_info
+[2.416s] writing mimic_controller.egg-info/PKG-INFO
+[2.417s] writing dependency_links to mimic_controller.egg-info/dependency_links.txt
+[2.417s] writing entry points to mimic_controller.egg-info/entry_points.txt
+[2.418s] writing requirements to mimic_controller.egg-info/requires.txt
+[2.418s] writing top-level names to mimic_controller.egg-info/top_level.txt
+[2.420s] reading manifest file 'mimic_controller.egg-info/SOURCES.txt'
+[2.422s] writing manifest file 'mimic_controller.egg-info/SOURCES.txt'
+[2.424s] running build_ext
+[2.425s] Creating /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic-controller.egg-link (link to .)
+[2.426s] Installing mimic_publisher script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+[2.426s] Installing mimic_to_moveit script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+[2.427s] 
+[2.427s] Installed /home/bgb_6342/manipulator_ws/build/mimic_controller
+[2.427s] running symlink_data
+[2.428s] symbolically linking /home/bgb_6342/manipulator_ws/build/mimic_controller/resource/mimic_controller -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/ament_index/resource_index/packages
+[2.429s] symbolically linking /home/bgb_6342/manipulator_ws/build/mimic_controller/package.xml -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller
+[2.431s] symbolically linking /home/bgb_6342/manipulator_ws/build/mimic_controller/launch/mimic.launch.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/launch
+[2.491s] Invoked command in '/home/bgb_6342/manipulator_ws/build/mimic_controller' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build --no-deps symlink_data --force

@@ -1,0 +1,36 @@
+[1.920s] Invoking command in '/home/bgb_6342/manipulator_ws/build/mimic_controller': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build
+[2.353s] running develop
+[2.651s] Removing /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic-controller.egg-link (link to .)
+[2.710s] Invoked command in '/home/bgb_6342/manipulator_ws/build/mimic_controller' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build
+[2.714s] Invoking command in '/home/bgb_6342/manipulator_ws/src/mimic_controller': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/mimic_controller build --build-base /home/bgb_6342/manipulator_ws/build/mimic_controller/build install --record /home/bgb_6342/manipulator_ws/build/mimic_controller/install.log --single-version-externally-managed install_data --force
+[3.125s] running egg_info
+[3.127s] writing ../../build/mimic_controller/mimic_controller.egg-info/PKG-INFO
+[3.127s] writing dependency_links to ../../build/mimic_controller/mimic_controller.egg-info/dependency_links.txt
+[3.127s] writing entry points to ../../build/mimic_controller/mimic_controller.egg-info/entry_points.txt
+[3.127s] writing requirements to ../../build/mimic_controller/mimic_controller.egg-info/requires.txt
+[3.129s] writing top-level names to ../../build/mimic_controller/mimic_controller.egg-info/top_level.txt
+[3.136s] reading manifest file '../../build/mimic_controller/mimic_controller.egg-info/SOURCES.txt'
+[3.138s] writing manifest file '../../build/mimic_controller/mimic_controller.egg-info/SOURCES.txt'
+[3.142s] running build
+[3.142s] running build_py
+[3.142s] copying mimic_controller/mimic_input_publisher.py -> /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller
+[3.142s] running install
+[3.142s] running install_lib
+[3.142s] creating /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+[3.143s] copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/__init__.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+[3.144s] copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/mimic_to_moveit_action.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+[3.145s] copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/mimic_input_publisher.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+[3.146s] byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/__init__.py to __init__.cpython-310.pyc
+[3.148s] byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/mimic_to_moveit_action.py to mimic_to_moveit_action.cpython-310.pyc
+[3.151s] byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/mimic_input_publisher.py to mimic_input_publisher.cpython-310.pyc
+[3.156s] running install_data
+[3.156s] copying resource/mimic_controller -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/ament_index/resource_index/packages
+[3.158s] copying package.xml -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller
+[3.158s] copying launch/mimic.launch.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/launch
+[3.158s] running install_egg_info
+[3.159s] Copying ../../build/mimic_controller/mimic_controller.egg-info to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller-0.0.0-py3.10.egg-info
+[3.167s] running install_scripts
+[3.205s] Installing mimic_publisher script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+[3.206s] Installing mimic_to_moveit script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+[3.207s] writing list of installed files to '/home/bgb_6342/manipulator_ws/build/mimic_controller/install.log'
+[3.258s] Invoked command in '/home/bgb_6342/manipulator_ws/src/mimic_controller' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/mimic_controller build --build-base /home/bgb_6342/manipulator_ws/build/mimic_controller/build install --record /home/bgb_6342/manipulator_ws/build/mimic_controller/install.log --single-version-externally-managed install_data --force

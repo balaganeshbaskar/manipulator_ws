@@ -21,6 +21,7 @@
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/spawn_controllers.launch.py
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/static_virtual_joint_tfs.launch.py
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/warehouse_db.launch.py
+/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/chomp_planning.yaml
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/five_dof_robot_manipulator.ros2_control.xacro
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/five_dof_robot_manipulator.srdf
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/five_dof_robot_manipulator.urdf.xacro
@@ -29,6 +30,7 @@
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/kinematics.yaml
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/moveit.rviz
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/moveit_controllers.yaml
+/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/ompl_planning.yaml
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/pilz_cartesian_limits.yaml
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/ros2_controllers.yaml
 /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/.setup_assistant

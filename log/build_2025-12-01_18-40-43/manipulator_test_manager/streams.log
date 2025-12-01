@@ -1,0 +1,31 @@
+[1.950s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build
+[2.392s] running develop
+[2.702s] Removing /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator-test-manager.egg-link (link to .)
+[2.774s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build
+[2.774s] Invoking command in '/home/bgb_6342/manipulator_ws/src/manipulator_test_manager': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/manipulator_test_manager build --build-base /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build install --record /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/install.log --single-version-externally-managed install_data --force
+[3.192s] running egg_info
+[3.192s] writing ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/PKG-INFO
+[3.192s] writing dependency_links to ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/dependency_links.txt
+[3.192s] writing entry points to ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/entry_points.txt
+[3.192s] writing requirements to ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/requires.txt
+[3.192s] writing top-level names to ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/top_level.txt
+[3.192s] reading manifest file '../../build/manipulator_test_manager/manipulator_test_manager.egg-info/SOURCES.txt'
+[3.192s] writing manifest file '../../build/manipulator_test_manager/manipulator_test_manager.egg-info/SOURCES.txt'
+[3.193s] running build
+[3.193s] running build_py
+[3.193s] running install
+[3.193s] running install_lib
+[3.193s] creating /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator_test_manager
+[3.195s] copying /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build/lib/manipulator_test_manager/__init__.py -> /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator_test_manager
+[3.196s] copying /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build/lib/manipulator_test_manager/test_manager_node.py -> /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator_test_manager
+[3.199s] byte-compiling /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator_test_manager/__init__.py to __init__.cpython-310.pyc
+[3.204s] byte-compiling /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator_test_manager/test_manager_node.py to test_manager_node.cpython-310.pyc
+[3.204s] running install_data
+[3.204s] copying resource/manipulator_test_manager -> /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/ament_index/resource_index/packages
+[3.204s] copying package.xml -> /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager
+[3.204s] running install_egg_info
+[3.208s] Copying ../../build/manipulator_test_manager/manipulator_test_manager.egg-info to /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator_test_manager-0.0.0-py3.10.egg-info
+[3.212s] running install_scripts
+[3.247s] Installing test_manager_node script to /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/manipulator_test_manager
+[3.248s] writing list of installed files to '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/install.log'
+[3.312s] Invoked command in '/home/bgb_6342/manipulator_ws/src/manipulator_test_manager' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/manipulator_test_manager build --build-base /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build install --record /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/install.log --single-version-externally-managed install_data --force

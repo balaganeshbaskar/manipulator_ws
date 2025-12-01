@@ -1,0 +1,19 @@
+[1.945s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator_hardware': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_hardware/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build --no-deps symlink_data --force
+[2.443s] running develop
+[2.731s] running egg_info
+[2.731s] writing manipulator_hardware.egg-info/PKG-INFO
+[2.731s] writing dependency_links to manipulator_hardware.egg-info/dependency_links.txt
+[2.731s] writing entry points to manipulator_hardware.egg-info/entry_points.txt
+[2.759s] writing requirements to manipulator_hardware.egg-info/requires.txt
+[2.759s] writing top-level names to manipulator_hardware.egg-info/top_level.txt
+[2.759s] reading manifest file 'manipulator_hardware.egg-info/SOURCES.txt'
+[2.760s] writing manifest file 'manipulator_hardware.egg-info/SOURCES.txt'
+[2.760s] running build_ext
+[2.760s] Creating /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages/manipulator-hardware.egg-link (link to .)
+[2.760s] Installing serial_bridge script to /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/manipulator_hardware
+[2.760s] 
+[2.760s] Installed /home/bgb_6342/manipulator_ws/build/manipulator_hardware
+[2.760s] running symlink_data
+[2.760s] symbolically linking /home/bgb_6342/manipulator_ws/build/manipulator_hardware/resource/manipulator_hardware -> /home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/ament_index/resource_index/packages
+[2.760s] symbolically linking /home/bgb_6342/manipulator_ws/build/manipulator_hardware/package.xml -> /home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware
+[2.893s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator_hardware' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_hardware/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build --no-deps symlink_data --force

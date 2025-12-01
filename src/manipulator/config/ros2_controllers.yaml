@@ -26,15 +26,25 @@ arm_controller:
     
     # Industrial-grade constraints
     constraints:
+      goal_time: 0.0 # 0.0 means let the trajectory decide
       stopped_velocity_tolerance: 0.01
-      goal_time: 0.0  # 0.0 = no timeout, more robust for variable-speed moves
-      joint_1: {trajectory: 0.05, goal: 0.02}
-      joint_2: {trajectory: 0.05, goal: 0.02}
-      joint_3: {trajectory: 0.05, goal: 0.02}
-      joint_4: {trajectory: 0.05, goal: 0.02}
-      joint_5: {trajectory: 0.05, goal: 0.02}
-    
-    # Critical for production
-    allow_partial_joints_goal: false  # Reject incomplete commands
-    open_loop_control: false
-    allow_integration_in_goal_trajectories: true
+      
+      # Trajectory Tolerance: Loose enough to handle communication lag
+      # Goal Tolerance: Tight enough to enforce your 0.05 degree hardware spec
+      # 0.05 degrees ~= 0.0009 radians. Let's use 0.001 radians for clean math.
+      
+      joint_1:
+        trajectory: 0.1    # ~5.7 degrees (Allow lag during move)
+        goal: 0.001        # ~0.057 degrees (Strict stop)
+      joint_2:
+        trajectory: 0.1
+        goal: 0.001
+      joint_3:
+        trajectory: 0.1
+        goal: 0.001
+      joint_4:
+        trajectory: 0.1
+        goal: 0.001
+      joint_5:
+        trajectory: 0.1
+        goal: 0.001

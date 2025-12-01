@@ -1,18 +1,17 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-from std_msgs.msg import Float64MultiArray
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 import serial
 import threading
-import time
+
 
 class SerialBridge(Node):
     def __init__(self):
         super().__init__('serial_bridge')
         
         # Parameters
-        self.declare_parameter('serial_port', '/dev/ttyACM0') # Default for Teensy
+        self.declare_parameter('serial_port', '/dev/ttyACM0')
         self.declare_parameter('baud_rate', 115200)
         self.declare_parameter('simulate', False)
         
@@ -20,29 +19,28 @@ class SerialBridge(Node):
         self.port_name = self.get_parameter('serial_port').value
         self.baud = self.get_parameter('baud_rate').value
         
-        # 1. Subscribe to Commands (from ROS 2 Control)
-        # TopicBasedSystem sends commands here
+        # Subscribe to commands from TopicBasedSystem (JointState type)
         self.cmd_sub = self.create_subscription(
-            Float64MultiArray, 
-            '/hardware/motor_commands', 
-            self.command_callback, 
+            JointState,
+            '/hardware/motor_commands',
+            self.command_callback,
             10
         )
         
-        # 2. Publish States (to ROS 2 Control)
-        # TopicBasedSystem reads states from here
+        # Publish states to TopicBasedSystem (JointState type)
         self.state_pub = self.create_publisher(
-            JointState, 
-            '/hardware/motor_states', 
+            JointState,
+            '/hardware/motor_states',
             10
         )
         
-        # 3. Diagnostics (Health Reporting)
+        # Diagnostics
         self.diag_pub = self.create_publisher(DiagnosticArray, '/diagnostics', 1)
 
         # Storage
         self.latest_commands = [0.0] * 5
         self.current_positions = [0.0] * 5
+        self.current_velocities = [0.0] * 5
         self.serial_conn = None
         self.lock = threading.Lock()
         
@@ -51,8 +49,8 @@ class SerialBridge(Node):
             self.connect_serial()
             
         # Timers
-        self.create_timer(0.02, self.control_loop)    # 50Hz Control Loop
-        self.create_timer(1.0, self.diagnostic_loop)  # 1Hz Health Check
+        self.create_timer(0.02, self.control_loop)    # 50Hz
+        self.create_timer(1.0, self.diagnostic_loop)  # 1Hz
         
         self.get_logger().info(f"Bridge Started. Mode: {'SIMULATION' if self.simulate else 'REAL HARDWARE'}")
 
@@ -66,19 +64,31 @@ class SerialBridge(Node):
             self.get_logger().error(f'Serial Connection Failed: {e}')
 
     def command_callback(self, msg):
-        """Store latest command from MoveIt/ROS2Control"""
+        """Receive joint commands from TopicBasedSystem (as JointState)"""
         with self.lock:
-            if len(msg.data) >= 5:
-                self.latest_commands = list(msg.data)[:5]
+            if len(msg.position) >= 5:
+                self.latest_commands = list(msg.position)[:5]
+                self.get_logger().info(f"Received CMD: [{', '.join([f'{x:.3f}' for x in self.latest_commands])}]")
 
     def control_loop(self):
-        """Main 50Hz Loop: Write to Serial -> Read from Serial -> Publish State"""
+        """Main control loop"""
         
         # --- SIMULATION MODE ---
         if self.simulate:
             with self.lock:
-                # Perfectly mimic motors (Instant move)
-                self.current_positions = list(self.latest_commands)
+                # Smoothly approach commanded positions
+                for i in range(5):
+                    delta = self.latest_commands[i] - self.current_positions[i]
+                    max_step = 0.1  # radians per 20ms cycle (~5 rad/s max velocity)
+                    
+                    if abs(delta) > 0.001:  # Still moving
+                        step = max(min(delta, max_step), -max_step)
+                        self.current_positions[i] += step
+                        self.current_velocities[i] = step / 0.02  # rad/s
+                    else:  # Reached target
+                        self.current_positions[i] = self.latest_commands[i]
+                        self.current_velocities[i] = 0.0
+                        
             self.publish_state()
             return
 
@@ -87,16 +97,14 @@ class SerialBridge(Node):
             return
 
         try:
-            # 1. SEND COMMANDS
-            # Format: <J1,J2,J3,J4,J5> e.g., <90.0,0.0,0.0,0.0,0.0>
+            # Send commands to Teensy
             with self.lock:
                 cmd_str = ",".join([f"{x:.3f}" for x in self.latest_commands])
             
             packet = f"<{cmd_str}>\n".encode('utf-8')
             self.serial_conn.write(packet)
             
-            # 2. READ FEEDBACK
-            # Expects: <P1,P2,P3,P4,P5>
+            # Read feedback from Teensy
             if self.serial_conn.in_waiting:
                 raw_line = self.serial_conn.readline()
                 try:
@@ -106,23 +114,30 @@ class SerialBridge(Node):
                         parts = content.split(',')
                         if len(parts) == 5:
                             with self.lock:
-                                self.current_positions = [float(p) for p in parts]
+                                new_positions = [float(p) for p in parts]
+                                # Calculate velocities
+                                for i in range(5):
+                                    self.current_velocities[i] = (new_positions[i] - self.current_positions[i]) / 0.02
+                                self.current_positions = new_positions
                 except UnicodeDecodeError:
-                    pass # Ignore partial/garbage bytes
+                    pass
                             
             self.publish_state()
             
         except Exception as e:
             self.get_logger().warn(f'Serial IO Error: {e}')
-            self.connect_serial() # Auto-reconnect
+            self.connect_serial()
 
     def publish_state(self):
-        """Package current positions into JointState and publish"""
+        """Publish current joint states to TopicBasedSystem"""
         msg = JointState()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.name = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5']
+        
         with self.lock:
-            msg.position = self.current_positions
+            msg.position = list(self.current_positions)
+            msg.velocity = list(self.current_velocities)
+            
         self.state_pub.publish(msg)
 
     def diagnostic_loop(self):
@@ -130,8 +145,8 @@ class SerialBridge(Node):
         arr = DiagnosticArray()
         arr.header.stamp = self.get_clock().now().to_msg()
         stat = DiagnosticStatus()
-        stat.name = "Teensy Bridge"
-        stat.hardware_id = "SerialPort"
+        stat.name = "Serial Bridge"
+        stat.hardware_id = "Manipulator Hardware"
         
         if self.simulate:
             stat.level = DiagnosticStatus.OK
@@ -141,10 +156,11 @@ class SerialBridge(Node):
             stat.message = "Connected"
         else:
             stat.level = DiagnosticStatus.ERROR
-            stat.message = "Disconnected / Error"
+            stat.message = "Disconnected"
             
         arr.status.append(stat)
         self.diag_pub.publish(arr)
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -156,3 +172,7 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()

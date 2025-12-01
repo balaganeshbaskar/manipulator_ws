@@ -1,0 +1,26 @@
+move_group:
+  ros__parameters:
+    # Force OMPL as the only and default planner
+    planning_plugin: ompl_interface/OMPLPlanner
+
+    planning_plugins:
+      - ompl_interface/OMPLPlanner
+
+    request_adapters:
+      - default_planner_request_adapters/ResolveConstraintFrames
+      - default_planner_request_adapters/FixWorkspaceBounds
+      - default_planner_request_adapters/FixStartStateBounds
+      - default_planner_request_adapters/AddTimeOptimalParameterization
+
+    start_state_max_bounds_error: 0.15
+
+    arm_group:
+      ros__parameters:
+        planner_config: RRTConnect
+
+        trajectory_execution:
+          allowed_start_tolerance: 0.15
+          allowed_execution_duration_scaling: 2.0
+          allowed_goal_duration_margin: 1.0
+          enforce_time_parameterization: true
+          time_parameterization: iterative_spline_parameterization

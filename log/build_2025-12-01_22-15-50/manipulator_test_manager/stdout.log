@@ -1,0 +1,19 @@
+running egg_info
+writing ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/PKG-INFO
+writing dependency_links to ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/dependency_links.txt
+writing entry points to ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/entry_points.txt
+writing requirements to ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/requires.txt
+writing top-level names to ../../build/manipulator_test_manager/manipulator_test_manager.egg-info/top_level.txt
+reading manifest file '../../build/manipulator_test_manager/manipulator_test_manager.egg-info/SOURCES.txt'
+writing manifest file '../../build/manipulator_test_manager/manipulator_test_manager.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+running install_data
+running install_egg_info
+removing '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator_test_manager-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/manipulator_test_manager/manipulator_test_manager.egg-info to /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator_test_manager-0.0.0-py3.10.egg-info
+running install_scripts
+Installing test_manager_node script to /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/manipulator_test_manager
+writing list of installed files to '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/install.log'

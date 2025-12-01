@@ -1,0 +1,28 @@
+running develop
+Removing /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32-interface-pkg.egg-link (link to .)
+running egg_info
+writing ../../build/stm32_interface_pkg/stm32_interface_pkg.egg-info/PKG-INFO
+writing dependency_links to ../../build/stm32_interface_pkg/stm32_interface_pkg.egg-info/dependency_links.txt
+writing entry points to ../../build/stm32_interface_pkg/stm32_interface_pkg.egg-info/entry_points.txt
+writing requirements to ../../build/stm32_interface_pkg/stm32_interface_pkg.egg-info/requires.txt
+writing top-level names to ../../build/stm32_interface_pkg/stm32_interface_pkg.egg-info/top_level.txt
+reading manifest file '../../build/stm32_interface_pkg/stm32_interface_pkg.egg-info/SOURCES.txt'
+writing manifest file '../../build/stm32_interface_pkg/stm32_interface_pkg.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+creating /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32_interface_pkg
+copying /home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/build/lib/stm32_interface_pkg/__init__.py -> /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32_interface_pkg
+copying /home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/build/lib/stm32_interface_pkg/stm32_uart_node.py -> /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32_interface_pkg
+byte-compiling /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32_interface_pkg/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32_interface_pkg/stm32_uart_node.py to stm32_uart_node.cpython-310.pyc
+running install_data
+copying resource/stm32_interface_pkg -> /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/ament_index/resource_index/packages
+copying package.xml -> /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg
+copying launch/uart.launch.py -> /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/launch
+running install_egg_info
+Copying ../../build/stm32_interface_pkg/stm32_interface_pkg.egg-info to /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32_interface_pkg-0.0.0-py3.10.egg-info
+running install_scripts
+Installing stm32_uart_node script to /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/stm32_interface_pkg
+writing list of installed files to '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/install.log'
