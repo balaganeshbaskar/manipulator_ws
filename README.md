@@ -42,6 +42,61 @@ colcon build --symlink-install
 
 source install/setup.bash
 
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+LATEST (01-12-25): 
+introduced manipulator_hardware, refactored a lot for industrial standard and actual robot usage.
+Finally put everything as one and works only for simulation as of now.
+Teensy connection not established as of (01-12-25).
+
+1. ros2 launch manipulator bringup_real.launch.py simulate:=true
+
+
+                                OR 
+(NOT TESTED)
+LAUCH WITH REAL HARDWARE:
+
+1. ros2 launch manipulator bringup_real.launch.py simulate:=false
+
+
+{
+When Moving to Real Hardware, when you connect your physical robot (Teensy),
+The serial bridge will:
+
+Connect to /dev/ttyACM0 (your Teensy)
+Send position commands: <J1,J2,J3,J4,J5>
+Receive position feedback: <P1,P2,P3,P4,P5>
+
+
+Tighten tolerances in ros2_controllers.yaml:
+
+joint_1:
+  trajectory: 0.05  # Reduce from 1.0 for real hardware
+  goal: 0.001       # Already tight
+
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 1. Launch (For launching Gazebo):
 [Remember to switch xacro files to gazebo_ros2_control/GazeboSystem]
 
