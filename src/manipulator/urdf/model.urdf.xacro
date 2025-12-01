@@ -236,9 +236,47 @@
     </gazebo>
 
 
-    <ros2_control name="GazeboSystem" type="system">
+    <ros2_control name="RobotSystem" type="system">
         <hardware>
-            <!-- <plugin>gazebo_ros2_control/GazeboSystem</plugin> -->
+            <!-- Industrial Standard: Topic-Based Interface for External Bridges -->
+            <!-- This separates the ROS controller from your Python bridge -->
+            <plugin>topic_based_ros2_control/TopicBasedSystem</plugin>
+            <param name="joint_commands_topic">/hardware/motor_commands</param>
+            <param name="joint_states_topic">/hardware/motor_states</param>
+        </hardware>
+        
+        <joint name="joint_1">
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <!-- Repeat for joints 2-5 -->
+        <joint name="joint_2">
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="joint_3">
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="joint_4">
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="joint_5">
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </ros2_control>
+
+
+    <!-- <ros2_control name="GazeboSystem" type="system">
+        <hardware>
+            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
             <plugin>fake_components/GenericSystem</plugin>
         </hardware>
         <joint name="joint_1">
@@ -266,8 +304,6 @@
             <state_interface name="position"/>
             <state_interface name="velocity"/>
         </joint>
-    </ros2_control>
-
-
+    </ros2_control> -->
 
 </robot>

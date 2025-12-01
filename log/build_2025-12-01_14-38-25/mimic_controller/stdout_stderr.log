@@ -1,0 +1,33 @@
+running develop
+Removing /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic-controller.egg-link (link to .)
+running egg_info
+writing ../../build/mimic_controller/mimic_controller.egg-info/PKG-INFO
+writing dependency_links to ../../build/mimic_controller/mimic_controller.egg-info/dependency_links.txt
+writing entry points to ../../build/mimic_controller/mimic_controller.egg-info/entry_points.txt
+writing requirements to ../../build/mimic_controller/mimic_controller.egg-info/requires.txt
+writing top-level names to ../../build/mimic_controller/mimic_controller.egg-info/top_level.txt
+reading manifest file '../../build/mimic_controller/mimic_controller.egg-info/SOURCES.txt'
+writing manifest file '../../build/mimic_controller/mimic_controller.egg-info/SOURCES.txt'
+running build
+running build_py
+copying mimic_controller/mimic_to_moveit_action.py -> /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller
+copying mimic_controller/mimic_input_publisher.py -> /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller
+running install
+running install_lib
+creating /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/__init__.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/mimic_to_moveit_action.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/mimic_input_publisher.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/mimic_to_moveit_action.py to mimic_to_moveit_action.cpython-310.pyc
+byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/mimic_input_publisher.py to mimic_input_publisher.cpython-310.pyc
+running install_data
+copying resource/mimic_controller -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/ament_index/resource_index/packages
+copying package.xml -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller
+copying launch/mimic.launch.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/launch
+running install_egg_info
+Copying ../../build/mimic_controller/mimic_controller.egg-info to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller-0.0.0-py3.10.egg-info
+running install_scripts
+Installing mimic_publisher script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+Installing mimic_to_moveit script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+writing list of installed files to '/home/bgb_6342/manipulator_ws/build/mimic_controller/install.log'

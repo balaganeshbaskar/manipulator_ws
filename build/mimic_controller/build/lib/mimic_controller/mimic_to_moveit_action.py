@@ -4,6 +4,7 @@ from rclpy.action import ActionClient
 from control_msgs.action import FollowJointTrajectory
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Float32
 from rclpy.time import Time
 
 class MimicActionClient(Node):
@@ -15,6 +16,7 @@ class MimicActionClient(Node):
             '/arm_group_controller/follow_joint_trajectory'
         )
         self.joint_names = ['joint_1', 'joint_2', 'joint_3', 'joint_4', 'joint_5']
+
         self.subscription = self.create_subscription(
             JointState,
             '/mimic_joint_states',
@@ -22,30 +24,38 @@ class MimicActionClient(Node):
             10
         )
 
+        # ✅ Publisher to /input_moveit_time (for test manager latency tracking)
+        self.latency_pub = self.create_publisher(Float32, '/input_moveit_time', 10)
+
     def listener_callback(self, msg):
-        # Compute latency
-        received_time = self.get_clock().now().nanoseconds
-        sent_time = Time.from_msg(msg.header.stamp).nanoseconds
-        latency_ms = (received_time - sent_time) / 1e6
-        self.get_logger().info(f'Latency: {latency_ms:.2f} ms')
+        now = self.get_clock().now()
+        sent_time = Time.from_msg(msg.header.stamp)
+        latency_ms = (now.nanoseconds - sent_time.nanoseconds) / 1e6
+
+        # ✅ Publish latency before sending to MoveIt
+        latency_msg = Float32()
+        latency_msg.data = float(latency_ms)
+        self.latency_pub.publish(latency_msg)
+
+        # self.get_logger().info(f'[LATENCY] Input → MoveIt: {latency_ms:.2f} ms')
 
         # Check if action server is ready
         if not self._action_client.server_is_ready():
             self.get_logger().warn('Action server not ready')
             return
 
-        # Prepare trajectory message
+        # Prepare trajectory
         traj = JointTrajectory()
         traj.joint_names = self.joint_names
         point = JointTrajectoryPoint()
         point.positions = msg.position
-        point.time_from_start.sec = 1  # delay from start of trajectory
+        point.time_from_start.sec = 1
         traj.points.append(point)
 
         goal_msg = FollowJointTrajectory.Goal()
         goal_msg.trajectory = traj
 
-        # Send to MoveIt
+        # Send trajectory goal
         self.get_logger().info(f'Sending goal: {point.positions}')
         self._action_client.send_goal_async(goal_msg)
 
@@ -58,7 +68,6 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
 
 
 

@@ -1,0 +1,35 @@
+running egg_info
+creating ../../build/manipulator_hardware/manipulator_hardware.egg-info
+writing ../../build/manipulator_hardware/manipulator_hardware.egg-info/PKG-INFO
+writing dependency_links to ../../build/manipulator_hardware/manipulator_hardware.egg-info/dependency_links.txt
+writing entry points to ../../build/manipulator_hardware/manipulator_hardware.egg-info/entry_points.txt
+writing requirements to ../../build/manipulator_hardware/manipulator_hardware.egg-info/requires.txt
+writing top-level names to ../../build/manipulator_hardware/manipulator_hardware.egg-info/top_level.txt
+writing manifest file '../../build/manipulator_hardware/manipulator_hardware.egg-info/SOURCES.txt'
+reading manifest file '../../build/manipulator_hardware/manipulator_hardware.egg-info/SOURCES.txt'
+writing manifest file '../../build/manipulator_hardware/manipulator_hardware.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build
+creating /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build/lib
+creating /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build/lib/manipulator_hardware
+copying manipulator_hardware/__init__.py -> /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build/lib/manipulator_hardware
+copying manipulator_hardware/serial_bridge.py -> /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build/lib/manipulator_hardware
+running install
+running install_lib
+creating /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages/manipulator_hardware
+copying /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build/lib/manipulator_hardware/__init__.py -> /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages/manipulator_hardware
+copying /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build/lib/manipulator_hardware/serial_bridge.py -> /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages/manipulator_hardware
+byte-compiling /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages/manipulator_hardware/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages/manipulator_hardware/serial_bridge.py to serial_bridge.cpython-310.pyc
+running install_data
+creating /home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/ament_index
+creating /home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/ament_index/resource_index
+creating /home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/ament_index/resource_index/packages
+copying resource/manipulator_hardware -> /home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/ament_index/resource_index/packages
+copying package.xml -> /home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware
+running install_egg_info
+Copying ../../build/manipulator_hardware/manipulator_hardware.egg-info to /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages/manipulator_hardware-0.0.0-py3.10.egg-info
+running install_scripts
+Installing serial_bridge script to /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/manipulator_hardware
+writing list of installed files to '/home/bgb_6342/manipulator_ws/build/manipulator_hardware/install.log'

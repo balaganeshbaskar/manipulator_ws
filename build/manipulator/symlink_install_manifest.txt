@@ -1,3 +1,4 @@
+/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/launch/bringup_real.launch.py
 /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/launch/display.launch.py
 /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/launch/launch_sim.launch.py
 /home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/urdf/inertial_macros.xacro

@@ -1,0 +1,37 @@
+[2.321s] Invoking command in '/home/bgb_6342/manipulator_ws/build/mimic_controller': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build
+[2.789s] running develop
+[3.145s] Removing /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic-controller.egg-link (link to .)
+[3.201s] Invoked command in '/home/bgb_6342/manipulator_ws/build/mimic_controller' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build
+[3.201s] Invoking command in '/home/bgb_6342/manipulator_ws/src/mimic_controller': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/mimic_controller build --build-base /home/bgb_6342/manipulator_ws/build/mimic_controller/build install --record /home/bgb_6342/manipulator_ws/build/mimic_controller/install.log --single-version-externally-managed install_data --force
+[3.635s] running egg_info
+[3.635s] writing ../../build/mimic_controller/mimic_controller.egg-info/PKG-INFO
+[3.635s] writing dependency_links to ../../build/mimic_controller/mimic_controller.egg-info/dependency_links.txt
+[3.640s] writing entry points to ../../build/mimic_controller/mimic_controller.egg-info/entry_points.txt
+[3.641s] writing requirements to ../../build/mimic_controller/mimic_controller.egg-info/requires.txt
+[3.641s] writing top-level names to ../../build/mimic_controller/mimic_controller.egg-info/top_level.txt
+[3.641s] reading manifest file '../../build/mimic_controller/mimic_controller.egg-info/SOURCES.txt'
+[3.641s] writing manifest file '../../build/mimic_controller/mimic_controller.egg-info/SOURCES.txt'
+[3.641s] running build
+[3.641s] running build_py
+[3.641s] copying mimic_controller/mimic_to_moveit_action.py -> /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller
+[3.641s] copying mimic_controller/mimic_input_publisher.py -> /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller
+[3.644s] running install
+[3.644s] running install_lib
+[3.647s] creating /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+[3.651s] copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/__init__.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+[3.651s] copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/mimic_to_moveit_action.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+[3.652s] copying /home/bgb_6342/manipulator_ws/build/mimic_controller/build/lib/mimic_controller/mimic_input_publisher.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller
+[3.652s] byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/__init__.py to __init__.cpython-310.pyc
+[3.653s] byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/mimic_to_moveit_action.py to mimic_to_moveit_action.cpython-310.pyc
+[3.656s] byte-compiling /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller/mimic_input_publisher.py to mimic_input_publisher.cpython-310.pyc
+[3.657s] running install_data
+[3.658s] copying resource/mimic_controller -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/ament_index/resource_index/packages
+[3.660s] copying package.xml -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller
+[3.661s] copying launch/mimic.launch.py -> /home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/launch
+[3.666s] running install_egg_info
+[3.670s] Copying ../../build/mimic_controller/mimic_controller.egg-info to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic_controller-0.0.0-py3.10.egg-info
+[3.684s] running install_scripts
+[3.715s] Installing mimic_publisher script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+[3.715s] Installing mimic_to_moveit script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+[3.716s] writing list of installed files to '/home/bgb_6342/manipulator_ws/build/mimic_controller/install.log'
+[3.776s] Invoked command in '/home/bgb_6342/manipulator_ws/src/mimic_controller' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/mimic_controller build --build-base /home/bgb_6342/manipulator_ws/build/mimic_controller/build install --record /home/bgb_6342/manipulator_ws/build/mimic_controller/install.log --single-version-externally-managed install_data --force

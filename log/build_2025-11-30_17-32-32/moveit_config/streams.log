@@ -1,0 +1,40 @@
+[0.067s] Invoking command in '/home/bgb_6342/manipulator_ws/build/moveit_config': CMAKE_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:/home/bgb_6342/manipulator_ws/install/moveit_config:/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg:/home/bgb_6342/manipulator_ws/install/mimic_controller:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager:/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/moveit_config -- -j4 -l4
+[0.132s] Invoked command in '/home/bgb_6342/manipulator_ws/build/moveit_config' returned '0': CMAKE_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:/home/bgb_6342/manipulator_ws/install/moveit_config:/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg:/home/bgb_6342/manipulator_ws/install/mimic_controller:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager:/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/moveit_config -- -j4 -l4
+[0.132s] Invoking command in '/home/bgb_6342/manipulator_ws/build/moveit_config': CMAKE_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:/home/bgb_6342/manipulator_ws/install/moveit_config:/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg:/home/bgb_6342/manipulator_ws/install/mimic_controller:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager:/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/moveit_config
+[0.140s] -- Install configuration: ""
+[0.142s] -- Execute custom install script
+[0.143s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/ament_index/resource_index/package_run_dependencies/moveit_config
+[0.144s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/ament_index/resource_index/parent_prefix_path/moveit_config
+[0.145s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/environment/ament_prefix_path.sh
+[0.145s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/environment/ament_prefix_path.dsv
+[0.146s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/environment/path.sh
+[0.147s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/environment/path.dsv
+[0.148s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/local_setup.bash
+[0.149s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/local_setup.sh
+[0.151s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/local_setup.zsh
+[0.151s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/local_setup.dsv
+[0.151s] -- Symlinking: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.dsv
+[0.167s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/ament_index/resource_index/packages/moveit_config
+[0.168s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/cmake/moveit_configConfig.cmake
+[0.168s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/cmake/moveit_configConfig-version.cmake
+[0.168s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.xml
+[0.168s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/demo.launch.py
+[0.173s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/move_group.launch.py
+[0.173s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/moveit_rviz.launch.py
+[0.173s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/rsp.launch.py
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/setup_assistant.launch.py
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/spawn_controllers.launch.py
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/static_virtual_joint_tfs.launch.py
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/launch/warehouse_db.launch.py
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/five_dof_robot_manipulator.ros2_control.xacro
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/five_dof_robot_manipulator.srdf
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/five_dof_robot_manipulator.urdf.xacro
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/initial_positions.yaml
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/joint_limits.yaml
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/kinematics.yaml
+[0.174s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/moveit.rviz
+[0.175s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/moveit_controllers.yaml
+[0.175s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/pilz_cartesian_limits.yaml
+[0.175s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/config/ros2_controllers.yaml
+[0.175s] -- Up-to-date symlink: /home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/.setup_assistant
+[0.183s] Invoked command in '/home/bgb_6342/manipulator_ws/build/moveit_config' returned '0': CMAKE_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:/home/bgb_6342/manipulator_ws/install/moveit_config:/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg:/home/bgb_6342/manipulator_ws/install/mimic_controller:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager:/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/moveit_config
