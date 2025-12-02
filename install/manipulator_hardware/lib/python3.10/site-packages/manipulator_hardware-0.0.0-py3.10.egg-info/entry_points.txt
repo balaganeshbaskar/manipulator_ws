@@ -1,0 +1,3 @@
+[console_scripts]
+serial_bridge = manipulator_hardware.serial_bridge:main
+

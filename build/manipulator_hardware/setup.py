@@ -1,1 +1,0 @@
-/home/bgb_6342/manipulator_ws/src/manipulator_hardware/setup.py
