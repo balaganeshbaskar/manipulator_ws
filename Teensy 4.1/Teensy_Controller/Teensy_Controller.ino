@@ -373,7 +373,6 @@ void parseResponse(uint8_t *r, uint8_t jointID) {
     joints[jointID - 1].updateSensorData(gearboxCount, motCount, motRotations);
   }
 }
-
 // ============================================================
 // LOGGING
 // ============================================================
