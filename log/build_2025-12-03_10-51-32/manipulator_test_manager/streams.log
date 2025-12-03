@@ -1,0 +1,17 @@
+[3.593s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build --no-deps symlink_data
+[4.078s] running develop
+[4.528s] running egg_info
+[4.529s] writing manipulator_test_manager.egg-info/PKG-INFO
+[4.530s] writing dependency_links to manipulator_test_manager.egg-info/dependency_links.txt
+[4.531s] writing entry points to manipulator_test_manager.egg-info/entry_points.txt
+[4.532s] writing requirements to manipulator_test_manager.egg-info/requires.txt
+[4.533s] writing top-level names to manipulator_test_manager.egg-info/top_level.txt
+[4.537s] reading manifest file 'manipulator_test_manager.egg-info/SOURCES.txt'
+[4.542s] writing manifest file 'manipulator_test_manager.egg-info/SOURCES.txt'
+[4.555s] running build_ext
+[4.557s] Creating /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages/manipulator-test-manager.egg-link (link to .)
+[4.559s] Installing test_manager_node script to /home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/manipulator_test_manager
+[4.561s] 
+[4.561s] Installed /home/bgb_6342/manipulator_ws/build/manipulator_test_manager
+[4.562s] running symlink_data
+[4.618s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build --no-deps symlink_data

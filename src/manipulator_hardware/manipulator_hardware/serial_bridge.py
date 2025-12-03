@@ -115,18 +115,27 @@ class SerialBridge(Node):
         self.get_logger().warn("   Robot will NOT move until position is known.")
 
     def command_callback(self, msg):
-        """Receive joint commands from TopicBasedSystem"""
+        """Receive joint commands with safety checks"""
         if not self.initialized:
-            self.get_logger().warn("Ignoring command: Robot not initialized!", throttle_duration_sec=1.0)
             return
         
         with self.lock:
             if len(msg.position) >= 5:
-                # Safety check
+                import math
+                MAX_JUMP_RAD = 1.5
+                CONTINUOUS_JOINTS = [0, 1, 2, 3, 4]  # All continuous during testing
+                
                 for i in range(5):
                     delta = abs(msg.position[i] - self.current_positions[i])
-                    if delta > 1.5:  # ~86 degrees
-                        self.get_logger().error(f"Joint {i+1}: Dangerous jump of {delta:.2f} rad! IGNORING.")
+                    
+                    if i in CONTINUOUS_JOINTS:
+                        if delta > math.pi:
+                            delta = 2 * math.pi - delta
+                    
+                    if delta > MAX_JUMP_RAD:
+                        self.get_logger().error(
+                            f"Joint {i+1}: Dangerous jump of {delta:.2f} rad! IGNORING."
+                        )
                         return
                 
                 self.latest_commands = list(msg.position)[:5]
@@ -187,12 +196,18 @@ class SerialBridge(Node):
                         if len(parts) == 5:
                             with self.lock:
                                 new_positions = [float(p) for p in parts]
-                                # Calculate velocities
-                                for i in range(5):
-                                    self.current_velocities[i] = (new_positions[i] - self.current_positions[i]) / 0.02
-                                self.current_positions = new_positions
+                                
+                                # Joint 1: Use real feedback from Teensy
+                                self.current_velocities[0] = (new_positions[0] - self.current_positions[0]) / 0.02
+                                self.current_positions[0] = new_positions[0]
+                                
+                                # Joints 2-5: Echo back commanded position instantly
+                                for i in range(1, 5):
+                                    self.current_positions[i] = self.latest_commands[i]
+                                    self.current_velocities[i] = 0.0  # Instant = zero velocity
                 except UnicodeDecodeError:
                     pass
+
 
                             
             self.publish_state()

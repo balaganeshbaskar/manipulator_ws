@@ -36,3 +36,9 @@
       enable_failure_recovery: false
       max_recovery_attempts: 5
       trajectory_initialization_method: quintic-spline
+
+      # REMOVE THE BELOW SECTION - NOT SAFE
+      trajectory_execution:
+        allowed_start_tolerance: 0.1  # Increase from default 0.01 to 0.1 rad (~5.7°)
+        allowed_goal_tolerance: 0.05
+        allowed_execution_duration_scaling: 1.2

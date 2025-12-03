@@ -10,7 +10,11 @@ setup.py
 ../../build/manipulator_hardware/manipulator_hardware.egg-info/zip-safe
 manipulator_hardware/__init__.py
 manipulator_hardware/serial_bridge.py
+manipulator_hardware.egg-info/PKG-INFO
+manipulator_hardware.egg-info/SOURCES.txt
+manipulator_hardware.egg-info/dependency_links.txt
+manipulator_hardware.egg-info/entry_points.txt
+manipulator_hardware.egg-info/requires.txt
+manipulator_hardware.egg-info/top_level.txt
+manipulator_hardware.egg-info/zip-safe
 resource/manipulator_hardware
-test/test_copyright.py
-test/test_flake8.py
-test/test_pep257.py
