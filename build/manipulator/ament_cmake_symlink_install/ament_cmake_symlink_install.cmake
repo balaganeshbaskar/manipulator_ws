@@ -313,6 +313,9 @@ message(STATUS "Execute custom install script")
 # install(DIRECTORY "launch" "urdf" "config" "DESTINATION" "share/manipulator")
 ament_cmake_symlink_install_directory("/home/bgb_6342/manipulator_ws/src/manipulator" DIRECTORY "launch" "urdf" "config" "DESTINATION" "share/manipulator")
 
+# install(PROGRAMS "scripts/teensy_executor.py" "DESTINATION" "lib/manipulator")
+ament_cmake_symlink_install_programs("/home/bgb_6342/manipulator_ws/src/manipulator" PROGRAMS "scripts/teensy_executor.py" "DESTINATION" "lib/manipulator")
+
 # install(FILES "/home/bgb_6342/manipulator_ws/build/manipulator/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/manipulator" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
 ament_cmake_symlink_install_files("/home/bgb_6342/manipulator_ws/src/manipulator" FILES "/home/bgb_6342/manipulator_ws/build/manipulator/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/manipulator" "DESTINATION" "share/ament_index/resource_index/package_run_dependencies")
 

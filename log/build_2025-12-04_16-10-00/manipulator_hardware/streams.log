@@ -1,0 +1,17 @@
+[1.948s] Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator_hardware': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_hardware/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build --no-deps symlink_data
+[2.363s] running develop
+[2.676s] running egg_info
+[2.676s] writing manipulator_hardware.egg-info/PKG-INFO
+[2.677s] writing dependency_links to manipulator_hardware.egg-info/dependency_links.txt
+[2.677s] writing entry points to manipulator_hardware.egg-info/entry_points.txt
+[2.677s] writing requirements to manipulator_hardware.egg-info/requires.txt
+[2.677s] writing top-level names to manipulator_hardware.egg-info/top_level.txt
+[2.682s] reading manifest file 'manipulator_hardware.egg-info/SOURCES.txt'
+[2.683s] writing manifest file 'manipulator_hardware.egg-info/SOURCES.txt'
+[2.684s] running build_ext
+[2.684s] Creating /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages/manipulator-hardware.egg-link (link to .)
+[2.689s] Installing serial_bridge script to /home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/manipulator_hardware
+[2.689s] 
+[2.689s] Installed /home/bgb_6342/manipulator_ws/build/manipulator_hardware
+[2.689s] running symlink_data
+[2.767s] Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator_hardware' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_hardware/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build --no-deps symlink_data
