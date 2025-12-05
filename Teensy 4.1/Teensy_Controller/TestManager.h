@@ -48,5 +48,4 @@ class TestManager {
     bool _active;
 };
 
-#endif
-
+#endif   
