@@ -61,6 +61,42 @@ void RoboticJoint::moveTo(float target_degrees) {
   Serial.print(F("\nMoving to ")); Serial.print(target_degrees, 4); Serial.println(F("°"));
 }
 
+void RoboticJoint::updateTarget(float new_target_degrees) {
+  // Only update target, DO NOT reset velocity or state
+  target_count = angleToCount(new_target_degrees);
+  target_angle_gb = new_target_degrees;
+  
+  float current_gb = countToAngle(current_position_count);
+  float delta_gb = new_target_degrees - current_gb;
+  
+  // Handle wrap-around
+  if (delta_gb > 180.0) delta_gb -= 360.0;
+  if (delta_gb < -180.0) delta_gb += 360.0;
+  
+  float current_mot = current_angle_motor;
+  target_angle_motor = current_mot + (delta_gb * GEAR_RATIO * MOTOR_DIRECTION_SIGN);
+  
+  // DO NOT reset these:
+  // state = IDLE;              // Keep current state (CRUISE)
+  // current_velocity = 0.0;    // Keep current velocity
+  // stepGen->resetSteps();     // Don't reset steps
+  
+  // Only reset correction tracking
+  last_error_degrees = 999.0;
+  correction_attempts = 0;
+  
+  // Mark as active move if not already
+  if (!move_active) {
+    move_active = true;
+    move_start_time = millis();
+  }
+  
+  Serial.print(F("→ Updated target to "));
+  Serial.print(new_target_degrees, 2);
+  Serial.println(F("° (smooth)"));
+}
+
+
 void RoboticJoint::moveRelative(float delta) {
   moveTo(countToAngle(current_position_count) + delta);
 }
@@ -115,7 +151,7 @@ void RoboticJoint::update() {
 
   // 1. WATCHDOG & HOLDING MAINTENANCE
   if (state == HOLDING) {
-      if (distance_remaining > 0.05) { 
+      if (distance_remaining > 0.50) {  // WAS distance_remaining > 0.05
           Serial.print(F("⚠ DRIFT DETECTED: ")); Serial.println(effective_error, 4);
           state = CORRECTING;
           move_active = true;
@@ -196,9 +232,17 @@ void RoboticJoint::update() {
 
   // MOTION EXECUTION
   if (state == CORRECTING) {
-    current_velocity = CORRECTION_SPEED;
-    if (distance_remaining < 0.02) current_velocity = 0.2;
-    setDirection(direction_cw);
+
+    if (distance_remaining > 50.0) {
+      // Target jumped far away - switch back to acceleration
+      Serial.println(F("→ Large target change detected, re-accelerating..."));
+      state = ACCELERATING;
+    } else
+    {
+      current_velocity = CORRECTION_SPEED;
+      if (distance_remaining < 0.02) current_velocity = 0.2;
+      setDirection(direction_cw);
+    }
     
   } else if (state == IDLE) {
     setDirection(direction_cw); 
@@ -211,11 +255,21 @@ void RoboticJoint::update() {
     current_velocity = _maxVelocity;
     if (distance_remaining <= decel_start_distance) state = DECELERATING;
   } else if (state == DECELERATING) {
-    current_velocity -= ACCELERATION * 0.02;
-    float min_speed = MIN_SPEED_FAR;
-    if (use_fine_mode) min_speed = MIN_SPEED_CLOSE; 
-    else if (distance_remaining < 5.0) min_speed = MIN_SPEED_NEAR;
-    if (current_velocity < min_speed) current_velocity = min_speed;
+
+    // NEW: Check if target changed dramatically while decelerating
+    if (distance_remaining > 50.0) {
+      // Target jumped far away - switch back to acceleration
+      Serial.println(F("→ Large target change detected, re-accelerating..."));
+      state = ACCELERATING;
+    } else {
+      // Normal deceleration
+      current_velocity -= ACCELERATION * 0.02;
+      float min_speed = MIN_SPEED_FAR;
+      if (use_fine_mode) min_speed = MIN_SPEED_CLOSE; 
+      else if (distance_remaining < 5.0) min_speed = MIN_SPEED_NEAR;
+      if (current_velocity < min_speed) current_velocity = min_speed;
+    }
+
   } else if (state == HOLDING) { stepGen->stop(); return; }
   
   stepGen->setSpeed(current_velocity);
