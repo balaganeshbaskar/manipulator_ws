@@ -2,6 +2,9 @@
 #define ROBOTIC_JOINT_H
 
 #include <Arduino.h>
+
+
+
 #include <TeensyTimerTool.h>
 
 using namespace TeensyTimerTool;
@@ -17,7 +20,7 @@ using namespace TeensyTimerTool;
 
 // #define MAX_VELOCITY 40.0
 #define ACCELERATION 100.0
-#define DECEL_SAFETY_FACTOR 1.4 // was 2
+#define DECEL_SAFETY_FACTOR 1.6 // was 2
 #define DEADZONE 0.050
 #define PRECISION_THRESHOLD 0.01
 #define HYBRID_SWITCH_THRESHOLD 2.0
@@ -27,7 +30,7 @@ using namespace TeensyTimerTool;
 #define MIN_SPEED_NEAR 4.0
 #define MIN_SPEED_CLOSE 1.0
 #define SETTLING_DURATION 150
-#define MAX_CORRECTION_ATTEMPTS 10
+#define MAX_CORRECTION_ATTEMPTS 5
 
 // States (EXACT COPY)
 enum ControlState {
@@ -97,6 +100,8 @@ class RoboticJoint {
     void moveRelative(float delta);
     void stop();
     void relax();
+    // NEW: Smooth target update (doesn't stop)
+    void updateTarget(float new_target_degrees);
     
     void updateSensorData(uint16_t gbCount, uint16_t motCount, int16_t motRot);
     
@@ -108,6 +113,14 @@ class RoboticJoint {
     float getVelocity() { return current_velocity; }
     ControlState getState() { return state; }
 
+    // // NEW: Add these getters
+    // float getMaxVelocity() const { return _maxVelocity; }
+
+    float getDecelStartDistance() const {
+      float max_decel_dist = (_maxVelocity * _maxVelocity) / (2.0 * ACCELERATION);
+      return max_decel_dist * DECEL_SAFETY_FACTOR;
+    }
+    
     const char* getStateStr();
     bool isDataValid() { return _dataValid; }
     bool isMoveActive() { return move_active; }
@@ -161,4 +174,3 @@ class RoboticJoint {
 };
 
 #endif
-
