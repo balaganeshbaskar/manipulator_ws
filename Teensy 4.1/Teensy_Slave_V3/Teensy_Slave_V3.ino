@@ -91,14 +91,40 @@ void loop() {
         lastPoll = millis();
     }
 
-    // ============================================================
-    // 5. SEND FEEDBACK TO ROS (20Hz)
-    // ============================================================
-    static unsigned long lastReport = 0;
-    if (millis() - lastReport > ROS2_FEEDBACK_INTERVAL_MS) {
-        ros2Bridge.sendFeedback();
-        lastReport = millis();
+    // 5. SEND FEEDBACK (Dual Mode)
+    if (currentSystemMode == MODE_ROS) {
+        static unsigned long lastRosReport = 0;
+        if (millis() - lastRosReport > ROS2_FEEDBACK_INTERVAL_MS) {
+            ros2Bridge.sendFeedback();
+            lastRosReport = millis();
+        }
+    } 
+    else {
+        static unsigned long lastManualReport = 0;
+        if (millis() - lastManualReport > 200) { 
+            printDebugStatus();
+            lastManualReport = millis();
+        }
     }
+
+}
+
+
+// NEW FUNCTION: Pretty Print
+void printDebugStatus() {
+    Serial.print("["); Serial.print(millis()/1000.0, 1); Serial.print("s] ");
+    
+    // Just print Joint 1 for clarity (or loop if you want all)
+    int i = 0; // J1
+    Serial.print("Tgt:"); Serial.print(joints[i].getTargetAngle(), 2);
+    Serial.print(" Cur:"); Serial.print(joints[i].getCurrentAngle(), 2);
+    Serial.print(" Err:"); Serial.print(joints[i].getError(), 2);
+    Serial.print(" Vel:"); Serial.print(joints[i].getVelocity(), 1);
+    
+    // You can access raw counts if you make them public or add a getter
+    // Serial.print(" Raw:"); Serial.print(joints[i].getRawGBCount()); 
+    
+    Serial.println();
 }
 
 
@@ -119,6 +145,14 @@ void processCommand(String cmd) {
     }
     else if (cmd == "@STATUS") {
         printSystemStatus();
+    }
+    else if (cmd == "@ROS") {
+        currentSystemMode = MODE_ROS;
+        Serial.println("MODE: ROS2 (Machine Output)");
+    }
+    else if (cmd == "@MANUAL") {
+        currentSystemMode = MODE_MANUAL;
+        Serial.println("MODE: MANUAL (Human Output)");
     }
 }
 
@@ -216,3 +250,11 @@ void printSystemStatus() {
     }
     Serial.println(F("=====================\n"));
 }
+
+
+// SAMPLE TEST COMMAND:
+// W 45.0,0,0,0,0,10.0,5.0,5.0,5.0,5.0,1
+
+// Tiny move:
+// W 1.0,0,0,0,0,5.0,5.0,5.0,5.0,5.0,1
+

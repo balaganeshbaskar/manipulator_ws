@@ -1,295 +1,192 @@
 #include "RoboticJoint.h"
 
-RoboticJoint::RoboticJoint(uint8_t id, uint8_t stepPin, uint8_t dirPin, uint8_t enaPin) 
-  : _id(id), _stepPin(stepPin), _dirPin(dirPin), _enaPin(enaPin) {
-  stepGen = new StepGenerator(_stepPin);
+// ============================================================
+// CONSTRUCTOR & SETUP
+// ============================================================
+RoboticJoint::RoboticJoint(uint8_t id, uint8_t stepPin, uint8_t dirPin, uint8_t enaPin)
+    : _id(id), _stepPin(stepPin), _dirPin(dirPin), _enaPin(enaPin) 
+{
+    stepGen = new StepGenerator(_stepPin);
 }
 
 void RoboticJoint::begin() {
-  pinMode(_dirPin, OUTPUT);
-  pinMode(_enaPin, OUTPUT);
-  digitalWrite(_stepPin, LOW);
-  digitalWrite(_dirPin, LOW);
-  digitalWrite(_enaPin, LOW); // EXACT COPY: LOW at start
+    pinMode(_dirPin, OUTPUT);
+    pinMode(_enaPin, OUTPUT);
+    digitalWrite(_stepPin, LOW);
+    digitalWrite(_dirPin, LOW);
+    digitalWrite(_enaPin, LOW);
+    
+    last_physics_update = micros();
 }
 
-void RoboticJoint::waitForEncoder() {
-  Serial.print(F("Waiting for encoder..."));
-  while (!_dataValid) { delay(10); }
-  
-  // CRITICAL INIT SEQUENCE (EXACT COPY FROM ORIGINAL)
-  current_position_count = target_count; // Already set by updateSensorData
-  target_angle_gb = countToAngle(target_count);
-  current_angle_motor = getMotorAngleTotal(0, 0) * -1.0; // Will be updated next poll
-  target_angle_motor = current_angle_motor;
-  state = HOLDING;
-  move_active = true; // Enable Watchdog immediately
-  
-  Serial.println(F(" OK"));
-  Serial.print(F("Initial: ")); Serial.print(countToAngle(current_position_count), 4); Serial.println(F("°"));
-  Serial.print(F("Target Set To: ")); Serial.print(target_angle_gb, 4); Serial.println(F("°"));
+void RoboticJoint::setDirection(bool cw) {
+    digitalWriteFast(_dirPin, cw ? HIGH : LOW);
+    delayMicroseconds(2);
 }
 
-void RoboticJoint::updateSensorData(uint16_t gbCount, uint16_t motCount, int16_t motRot) {
-  // 1. Update Timestamp (Heartbeat)
-  last_update_time = millis(); 
-
-  // 2. Process Data
-  current_position_count = (float)gbCount;
-  current_angle_gb = countToAngle(current_position_count);
-  current_angle_motor = getMotorAngleTotal(motCount, motRot) * -1.0;
-  
-  // 3. First Run Init
-  if (!_dataValid) {
-    target_count = current_position_count;
-    target_angle_gb = current_angle_gb;
-    target_angle_motor = current_angle_motor;
-  }
-  _dataValid = true;
+// ============================================================
+// CORE: SENSOR UPDATE (RAW)
+// ============================================================
+void RoboticJoint::updateSensorData(uint16_t gbCountRaw, uint16_t motCount, int16_t motRot) {
+    last_update_time = millis();
+    _current_counts = (float)gbCountRaw; // Store RAW
+    
+    if (!_dataValid) {
+        _target_counts = _current_counts; // Boot sync
+    }
+    _dataValid = true;
 }
 
-
-void RoboticJoint::moveTo(float target_degrees) {
-  digitalWrite(_enaPin, LOW);
-  target_count = angleToCount(target_degrees);
-  target_angle_gb = target_degrees;
-  float current_gb = countToAngle(current_position_count);
-  float delta_gb = target_degrees - current_gb;
-  if (delta_gb > 180.0) delta_gb -= 360.0;
-  if (delta_gb < -180.0) delta_gb += 360.0;
-  
-  float current_mot = current_angle_motor;
-  target_angle_motor = current_mot + (delta_gb * GEAR_RATIO * MOTOR_DIRECTION_SIGN);
-  
-  state = IDLE; 
-  current_velocity = 0.5; 
-  stepGen->resetSteps();
-  move_start_time = millis(); 
-  log_start_time = millis(); 
-  move_active = true;
-  last_error_degrees = 999.0; 
-  correction_attempts = 0;
-  Serial.print(F("\nMoving to ")); 
-  Serial.print(target_degrees, 4); 
-  Serial.println(F("°"));
-}
-
+// ============================================================
+// CORE: TARGET UPDATE (CONVERT ONCE)
+// ============================================================
 void RoboticJoint::updateTarget(float new_target_degrees) {
-  // Only update target, DO NOT reset velocity or state
-  target_count = angleToCount(new_target_degrees);
-  target_angle_gb = new_target_degrees;
-  
-  float current_gb = countToAngle(current_position_count);
-  float delta_gb = new_target_degrees - current_gb;
-  
-  // Handle wrap-around
-  if (delta_gb > 180.0) delta_gb -= 360.0;
-  if (delta_gb < -180.0) delta_gb += 360.0;
-  
-  float current_mot = current_angle_motor;
-  target_angle_motor = current_mot + (delta_gb * GEAR_RATIO * MOTOR_DIRECTION_SIGN);
-  
-  // DO NOT reset these:
-  // state = IDLE;              // Keep current state (CRUISE)
-  // current_velocity = 0.0;    // Keep current velocity
-  // stepGen->resetSteps();     // Don't reset steps
-  
-  // Only reset correction tracking
-  last_error_degrees = 999.0;
-  correction_attempts = 0;
-  
-  // Mark as active move if not already
-  if (!move_active) {
-    move_active = true;
-    move_start_time = millis();
-  }
-  
-  Serial.print(F("→ Updated target to "));
-  Serial.print(new_target_degrees, 2);
-  Serial.println(F("° (smooth)"));
+    // Convert and normalize
+    float new_target_counts = new_target_degrees * COUNTS_PER_DEGREE;
+    while(new_target_counts >= 4096.0f) new_target_counts -= 4096.0f;
+    while(new_target_counts < 0.0f)     new_target_counts += 4096.0f;
+    
+    _target_counts = new_target_counts;
+    
+    if (state == HOLDING) {
+        state = IDLE; // Wake up
+        _lastAppliedVelocity = -9999.0f;
+    }
 }
 
-
-void RoboticJoint::moveRelative(float delta) {
-  moveTo(countToAngle(current_position_count) + delta);
-}
-
+// ============================================================
+// CORE: STOP
+// ============================================================
 void RoboticJoint::stop() {
-  stepGen->stop();
-  state = HOLDING;
-  move_active = true;
-  digitalWrite(_enaPin, LOW);
-  Serial.println(F("STOPPED (HOLDING)"));
-}
-
-void RoboticJoint::relax() {
-  stepGen->stop();
-  state = HOLDING;
-  move_active = false;
-  digitalWrite(_enaPin, HIGH);
-  Serial.println(F("RELAXED (OFF)"));
+    stepGen->stop();
+    state = HOLDING;
+    _current_velocity_counts = 0.0f;
+    _lastAppliedVelocity = 0.0f;
+    digitalWrite(_enaPin, LOW);
 }
 
 // ============================================================
-// UPDATE CONTROL LOOP (EXACT COPY FROM ORIGINAL)
+// V4 PURE SERVO LOOP (No Internal Ramp)
 // ============================================================
-#include "RoboticJoint.h"
-
-// ... (Constructors remain same)
-
 void RoboticJoint::update() {
     // -----------------------------------------------------
-    // 1. CALCULATE ERROR
+    // 1. TIME STEP
     // -----------------------------------------------------
-    float error = target_angle_gb - current_angle_gb;
-    
-    // Wraparound fix (-180 to 180)
-    if (error > 180.0) error -= 360.0;
-    if (error < -180.0) error += 360.0;
-    
+    unsigned long now = micros();
+    float dt = (now - last_physics_update) / 1000000.0f;
+    if (dt < 0.0005f) return; // Cap at 2kHz
+    last_physics_update = now;
+
+    // -----------------------------------------------------
+    // 2. ERROR CALCULATION (IN COUNTS)
+    // -----------------------------------------------------
+    float error = _target_counts - _current_counts;
+    if (error > 2048.0f) error -= 4096.0f;
+    if (error < -2048.0f) error += 4096.0f;
     float abs_error = abs(error);
 
     // -----------------------------------------------------
-    // 2. VIRTUAL JOINT SIMULATION
+    // 3. VIRTUAL JOINT PHYSICS (Use commanded velocity)
     // -----------------------------------------------------
     if (!_isPhysical) {
-        unsigned long now = micros();
-        float dt = (now - last_sim_time) / 1000000.0;
-        last_sim_time = now;
-        if(dt > 0.1) dt = 0.0; // Prevent huge jumps on first loop
-
-        // Simulate motion: Move 'current_angle_gb' towards target by current_velocity * dt
         if (state != HOLDING && state != IDLE) {
-            float move_step = current_velocity * dt;
-            if (move_step > abs_error) move_step = abs_error; // Don't overshoot
-            
-            if (error > 0) current_angle_gb += move_step;
-            else           current_angle_gb -= move_step;
-            
-            // Normalize virtual angle
-            if(current_angle_gb >= 360.0) current_angle_gb -= 360.0;
-            if(current_angle_gb < 0.0)    current_angle_gb += 360.0;
-            
-            // Sync counts for consistency
-            current_position_count = angleToCount(current_angle_gb);
+            float move_step = _current_velocity_counts * dt;
+            if (move_step > abs_error) move_step = abs_error;
+            if (error > 0) _current_counts += move_step;
+            else           _current_counts -= move_step;
+            // Wrap
+            if(_current_counts >= 4096.0f) _current_counts -= 4096.0f;
+            if(_current_counts < 0.0f)     _current_counts += 4096.0f;
         }
     }
 
     // -----------------------------------------------------
-    // 3. STATE MACHINE (Shared by Real & Virtual)
+    // 4. SERVO LOGIC (Trust MoveIt's velocity)
     // -----------------------------------------------------
     
-    // Check Arrival
-    if (abs_error < DEADZONE) {
-        if (state != HOLDING) {
-            stop(); 
-        }
+    // ARRIVAL CHECK
+    if (abs_error < DEADZONE_COUNTS) {
+        if (state != HOLDING) stop();
         return;
     }
 
-    // State Transitions
+    // START / DIRECTION
     if (state == HOLDING || state == IDLE) {
-        state = ACCELERATING;
+        state = CRUISING; // MoveIt handles ramp, we just execute
+
+        // FIX: Initialize velocity immediately!
+        _current_velocity_counts = _maxVelocityCounts; 
+
+        // Set direction once per move
         if (_isPhysical) {
-            // Only toggle pins if real
-            if (MOTOR_DIRECTION_SIGN == -1) setDirection(error > 0);
-            else setDirection(error < 0);
+            bool cw = (MOTOR_DIRECTION_SIGN == -1) ? (error > 0) : (error < 0);
+            setDirection(cw);
         }
     }
     
-    // Velocity Profiling (Ramp)
-    if (state == ACCELERATING) {
-        current_velocity += ACCELERATION * 0.005; 
-        if (current_velocity >= _maxVelocity) {
-            current_velocity = _maxVelocity;
-            state = CRUISING;
-        }
-    }
-    else if (state == CRUISING) {
-        float decel_dist = (current_velocity * current_velocity) / (2 * ACCELERATION);
-        if (abs_error <= decel_dist) {
-            state = DECELERATING;
-        }
-    }
-    else if (state == DECELERATING) {
-        current_velocity -= ACCELERATION * 0.01;
-        if (current_velocity < 1.0) current_velocity = 1.0; 
-    }
-
-    // -----------------------------------------------------
-    // 4. HARDWARE EXECUTION (Real Only)
-    // -----------------------------------------------------
+    // 5. EXECUTE AT COMMANDED VELOCITY
     if (_isPhysical) {
-        // FILTER: Only update timer if velocity changed by > 1% 
-        // OR if we are stopping (velocity is 0).
-        if (abs(current_velocity - _lastAppliedVelocity) > 0.1 || current_velocity == 0.0) {
-            stepGen->setSpeed(current_velocity);
-            _lastAppliedVelocity = current_velocity;
+        // Use MoveIt's commanded velocity directly
+        // Dynamic Direction Correction (fixes overshoot)
+        bool cw = (MOTOR_DIRECTION_SIGN == -1) ? (error > 0) : (error < 0);
+        setDirection(cw);
+        
+        // Apply speed (filter jitter)
+        if (abs(_current_velocity_counts - _lastAppliedVelocity) > 2.0f) {
+            stepGen->setSpeedCounts(_current_velocity_counts);
+            _lastAppliedVelocity = _current_velocity_counts;
         }
     }
 }
 
-
-
-// Helpers
-float RoboticJoint::countToAngle(float c) {
-  while(c<0)c+=4096; while(c>=4096)c-=4096; return (c/4096.0)*360.0;
-}
-float RoboticJoint::angleToCount(float a) {
-  while(a<0)a+=360; while(a>=360)a-=360; return (a/360.0)*4096.0;
-}
-float RoboticJoint::getMotorAngleTotal(uint16_t motCount, int16_t motRot) {
-  float raw = (motCount / 4096.0) * 360.0;
-  return (motRot * 360.0) + raw;
-}
-void RoboticJoint::setDirection(bool cw) {
-  digitalWriteFast(_dirPin, cw ? HIGH : LOW); delayMicroseconds(5);
-}
-
+// ============================================================
+// GETTERS (Convert Counts -> Degrees for ROS/Display)
+// ============================================================
+// float RoboticJoint::getCurrentAngle() { return _current_counts * DEGREES_PER_COUNT; }
+// float RoboticJoint::getTargetAngle()  { return _target_counts * DEGREES_PER_COUNT; }
+// float RoboticJoint::getError()        { return (_target_counts - _current_counts) * DEGREES_PER_COUNT; }
+// float RoboticJoint::getVelocity()     { return _current_velocity_counts * DEGREES_PER_COUNT; }
 const char* RoboticJoint::getStateStr() {
-  switch(state) {
-    case IDLE: return "IDLE";
-    case ACCELERATING: return "ACCEL";
-    case CRUISING: return "CRUISE";
-    case DECELERATING: return "DECEL";
-    case SETTLING: return "SETTLING";
-    case CORRECTING: return "CORRECT";
-    case HOLDING: return "HOLD";
-    default: return "?";
-  }
+    switch(state) {
+        case IDLE: return "IDLE";
+        case CRUISING: return "CRUISE";
+        case HOLDING: return "HOLD";
+        default: return "?";
+    }
 }
 
-void RoboticJoint::printMoveSummary() {
-  unsigned long duration_ms = millis() - move_start_time;
-  float gb_coarse = countToAngle(current_position_count);
-  float final_err = (position_error_counts / 4096.0) * 360.0;
-  
-  Serial.println(F("\n╔═══════════════════════════════════════╗"));
-  Serial.println(F("║         MOVE COMPLETE                 ║"));
-  Serial.println(F("╠═══════════════════════════════════════╣"));
-  Serial.print(F("║ Target:      ")); Serial.print(countToAngle(target_count), 4); Serial.println(F("°"));
-  Serial.print(F("║ Final GB:    ")); Serial.print(gb_coarse, 4); Serial.println(F("° (Coarse)"));
-  Serial.print(F("║ Error:       ")); Serial.print(final_err, 4); Serial.println(F("° (Fine)"));
-  Serial.print(F("║ Corrections: ")); Serial.println(correction_attempts);
-  Serial.print(F("║ Duration:    ")); Serial.print(duration_ms / 1000.0, 2); Serial.println(F(" s"));
-  Serial.print(F("║ Steps:       ")); Serial.println(stepGen->getSteps());
-  Serial.print(F("║ Success:     "));
-  Serial.println(abs(final_err) < MAX_ACCEPTABLE_ERROR ? F("YES ✓") : F("NO ✗"));
-  Serial.println(F("╚═══════════════════════════════════════╝\n"));
+// ============================================================
+// PRIVATE HELPER FUNCTIONS (Required for declaration match)
+// ============================================================
+float RoboticJoint::countToAngle(float c) {
+    // Keep this for debug printing if needed
+    while(c<0)c+=4096; while(c>=4096)c-=4096; return (c/4096.0)*360.0;
 }
 
+float RoboticJoint::angleToCount(float a) {
+    // Keep this for debug printing if needed
+    while(a<0)a+=360; while(a>=360)a-=360; return (a/360.0)*4096.0;
+}
 
+// Note: This function was used for motor encoder calculation in V2.
+// In V3/V4, we rely solely on the Gearbox Absolute Encoder for position control.
+// We keep it for compatibility and potential diagnostics.
+float RoboticJoint::getMotorAngleTotal(uint16_t motCount, int16_t motRot) {
+    float raw = (motCount / 4096.0) * 360.0;
+    return (motRot * 360.0) + raw;
+}
+
+// Legacy Print Function (Optional - for manual debugging)
 void RoboticJoint::printStatus() {
-  float current_angle = countToAngle(current_position_count);
-  float target_angle = countToAngle(target_count);
-  float error_deg = (position_error_counts / 4096.0) * 360.0;
-  
-  Serial.println(F("\nSTATUS:"));
-  Serial.print(F("  Position:    ")); Serial.print(current_angle, 3); Serial.println(F("°"));
-  Serial.print(F("  Target:      ")); Serial.print(target_angle, 2); Serial.println(F("°"));
-  Serial.print(F("  Error:       ")); Serial.print(error_deg, 3); Serial.println(F("°"));
-  Serial.print(F("  Velocity:    ")); Serial.print(current_velocity, 2); Serial.println(F(" deg/s"));
-  Serial.print(F("  Corrections: ")); Serial.println(correction_attempts);
-  Serial.print(F("  State:       ")); Serial.println(getStateStr());
-  Serial.println();
+    float current_angle = _current_counts * DEGREES_PER_COUNT;
+    float target_angle = _target_counts * DEGREES_PER_COUNT;
+    float error_deg = (_target_counts - _current_counts) * DEGREES_PER_COUNT;
+    
+    Serial.println(F("\nSTATUS:"));
+    Serial.print(F(" Position:    ")); Serial.print(current_angle, 3); Serial.println(F("°"));
+    Serial.print(F(" Target:      ")); Serial.print(target_angle, 2); Serial.println(F("°"));
+    Serial.print(F(" Error:       ")); Serial.print(error_deg, 3); Serial.println(F("°"));
+    Serial.print(F(" Vel (Cnts):  ")); Serial.print(_current_velocity_counts, 1); 
+    Serial.print(F(" State:       ")); Serial.println(getStateStr());
+    Serial.println();
 }

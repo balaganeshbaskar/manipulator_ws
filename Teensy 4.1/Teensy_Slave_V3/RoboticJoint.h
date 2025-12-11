@@ -2,193 +2,164 @@
 #define ROBOTIC_JOINT_H
 
 #include <Arduino.h>
-#include <TeensyTimerTool.h>
+#include "TeensyTimerTool.h"
 
 using namespace TeensyTimerTool;
 
 // ============================================================
-// CONSTANTS (EXACT COPY FROM ORIGINAL)
+// NATIVE UNIT CONSTANTS (COUNTS)
 // ============================================================
-#define GEAR_RATIO 50.0
-#define MOTOR_DIRECTION_SIGN -1
+#define ENCODER_RESOLUTION 4096.0f
+#define GEAR_RATIO 50.0f
 #define MICROSTEPS 8
-#define MOTOR_STEPS_PER_REV (200.0 * MICROSTEPS)
-#define GEARBOX_STEPS_PER_DEGREE ((MOTOR_STEPS_PER_REV / 360.0) * GEAR_RATIO)
+#define MOTOR_STEPS_PER_REV (200.0f * MICROSTEPS)
 
-// #define MAX_VELOCITY 40.0
-#define ACCELERATION 100.0
-#define DECEL_SAFETY_FACTOR 1.6 // was 2
-#define DEADZONE 0.050
-#define PRECISION_THRESHOLD 0.01
-#define HYBRID_SWITCH_THRESHOLD 2.0
-#define MAX_ACCEPTABLE_ERROR 0.5
-#define CORRECTION_SPEED 1.5
-#define MIN_SPEED_FAR 8.0
-#define MIN_SPEED_NEAR 4.0
-#define MIN_SPEED_CLOSE 1.0
-#define SETTLING_DURATION 150
-#define MAX_CORRECTION_ATTEMPTS 5
+// 1 Gearbox Rev = 50 Motor Revs = 50 * 1600 Steps = 80,000 Steps
+// 1 Gearbox Rev = 4096 Counts
+// Steps per Count = 80000 / 4096 = 19.53125
+#define STEPS_PER_COUNT ((GEAR_RATIO * MOTOR_STEPS_PER_REV) / ENCODER_RESOLUTION)
 
-// States (EXACT COPY)
+// CONVERSION FACTORS
+#define COUNTS_PER_DEGREE (ENCODER_RESOLUTION / 360.0f) // ~11.377
+#define DEGREES_PER_COUNT (360.0f / ENCODER_RESOLUTION) // ~0.087
+
+// MOTION PARAMETERS (IN COUNTS)
+// Acceleration: 100 deg/s^2 * 11.37 = ~1137 counts/s^2
+#define ACCEL_COUNTS 1137.0f 
+
+// Deadzone: 0.05 deg * 11.37 = ~0.57 counts (Tight!)
+#define DEADZONE_COUNTS 0.8f 
+
+#define MOTOR_DIRECTION_SIGN -1
+
 enum ControlState {
-  IDLE, ACCELERATING, CRUISING, DECELERATING, SETTLING, CORRECTING, HOLDING
+    IDLE, ACCELERATING, CRUISING, DECELERATING, HOLDING
 };
 
 // ============================================================
-// STEP GENERATOR CLASS (EXACT COPY FROM ORIGINAL)
+// STEP GENERATOR (Updated for Counts)
 // ============================================================
 class StepGenerator {
 private:
-  PeriodicTimer timer;
-  uint8_t stepPin;
-  volatile bool running;
-  volatile uint32_t stepCount;
-  
+    PeriodicTimer timer;
+    uint8_t stepPin;
+    volatile bool running;
+    volatile uint32_t stepCount;
+
 public:
-  StepGenerator(uint8_t pin) : stepPin(pin), running(false), stepCount(0) {
-    pinMode(stepPin, OUTPUT);
-    digitalWrite(stepPin, LOW);
-  }
-  
-  void setSpeed(float deg_per_sec) {
-    if (abs(deg_per_sec) < 0.001) { stop(); return; }
-    float steps_per_sec = abs(deg_per_sec) * GEARBOX_STEPS_PER_DEGREE;
-    float interval_us = 1000000.0 / steps_per_sec;
-    if (interval_us < 5.0) interval_us = 5.0;
-    if (interval_us > 500000.0) { stop(); return; }
-    if (!running) {
-      running = true;
-      timer.begin([this]() { this->pulseISR(); }, interval_us);
-    } else {
-      timer.setPeriod(interval_us);
+    StepGenerator(uint8_t pin) : stepPin(pin), running(false), stepCount(0) {
+        pinMode(stepPin, OUTPUT);
+        digitalWrite(stepPin, LOW);
     }
-  }
-  
-  void stop() {
-    running = false;
-    timer.end();
-    digitalWriteFast(stepPin, LOW);
-  }
-  
-  uint32_t getSteps() { return stepCount; }
-  void resetSteps() { stepCount = 0; }
-  
+
+    // Input: Velocity in COUNTS per Second
+    void setSpeedCounts(float counts_per_sec) {
+        if (abs(counts_per_sec) < 0.1) { stop(); return; } // Min speed
+
+        float steps_per_sec = abs(counts_per_sec) * STEPS_PER_COUNT;
+        
+        // Safety Clamps (Teensy Timer Limits)
+        float interval_us = 1000000.0f / steps_per_sec;
+        if (interval_us < 5.0f) interval_us = 5.0f;           // Max ~200kHz
+        if (interval_us > 500000.0f) { stop(); return; }      // Min ~2Hz
+
+        if (!running) {
+            running = true;
+            timer.begin([this]() { this->pulseISR(); }, interval_us);
+        } else {
+            timer.setPeriod(interval_us);
+        }
+    }
+
+    void stop() {
+        running = false;
+        timer.end();
+        digitalWriteFast(stepPin, LOW);
+    }
+
+    uint32_t getSteps() { return stepCount; }
+    void resetSteps() { stepCount = 0; }
+
 private:
-  void pulseISR() {
-    if (!running) return;
-    digitalWriteFast(stepPin, HIGH);
-    delayMicroseconds(2);
-    digitalWriteFast(stepPin, LOW);
-    stepCount++;
-  }
+    void pulseISR() {
+        if (!running) return;
+        digitalWriteFast(stepPin, HIGH);
+        delayMicroseconds(2);
+        digitalWriteFast(stepPin, LOW);
+        stepCount++;
+    }
 };
 
 // ============================================================
 // ROBOTIC JOINT CLASS
 // ============================================================
 class RoboticJoint {
-  public:
+public:
     RoboticJoint(uint8_t id, uint8_t stepPin, uint8_t dirPin, uint8_t enaPin);
     
     void begin();
-    void waitForEncoder(); // NEW: Encapsulates the encoder wait
-    void update();
-    void moveTo(float angle);
-    void moveRelative(float delta);
+    
+    // Updates
+    void updateSensorData(uint16_t gbCountRaw, uint16_t motCount, int16_t motRot);
+    void updateTarget(float new_target_degrees); // Input in degrees (converted immediately)
+    void update(); // The main loop
     void stop();
-    void relax();
-    // NEW: Smooth target update (doesn't stop)
-    void updateTarget(float new_target_degrees);
+
+    // Getters (Convert back to degrees for ROS/Display)
+    float getCurrentAngle() { return _current_counts * DEGREES_PER_COUNT; }
+    float getTargetAngle()  { return _target_counts * DEGREES_PER_COUNT; }
+    float getError()        { return (_target_counts - _current_counts) * DEGREES_PER_COUNT; }
+    float getVelocity()     { return _current_velocity_counts * DEGREES_PER_COUNT; }
     
-    void updateSensorData(uint16_t gbCount, uint16_t motCount, int16_t motRot);
+    const char* getStateStr();
     
-    // Getters
-    uint8_t getId() { return _id; }
-    float getCurrentAngle() { return countToAngle(current_position_count); }
-    float getTargetAngle() { return countToAngle(target_count); }
-    float getError() { return (position_error_counts / 4096.0) * 360.0; }
-    float getVelocity() { return current_velocity; }
+    // State Checks
+    bool isDataValid() { return _dataValid; }
     ControlState getState() { return state; }
-
-    // // NEW: Add these getters
-    // float getMaxVelocity() const { return _maxVelocity; }
-
-    float getDecelStartDistance() const {
-      float max_decel_dist = (_maxVelocity * _maxVelocity) / (2.0 * ACCELERATION);
-      return max_decel_dist * DECEL_SAFETY_FACTOR;
-    }
-
-        // Check if data is fresh (timeout in milliseconds)
+    
+    void setPhysical(bool isPhys) { _isPhysical = isPhys; }
+    bool isPhysical() { return _isPhysical; }
     bool isSensorActive(unsigned long timeout_ms) {
-        if (!_isPhysical) return true; // Virtual always active
+        if (!_isPhysical) return true; 
         return (millis() - last_update_time) < timeout_ms;
     }
     
-    const char* getStateStr();
-    bool isDataValid() { return _dataValid; }
-    bool isMoveActive() { return move_active; }
-
-    uint8_t getCorrectionAttempts() { return correction_attempts; }
-    uint32_t getSteps() { return stepGen->getSteps(); }
-    unsigned long getMoveStartTime() { return move_start_time; }
-    
-    void printMoveSummary();
-    void printStatus();
-
-    void setMaxVelocity(float speed) {
-        if (speed > 0.1 && speed <= 100.0) { // Safety limits
-            _maxVelocity = speed;
-        }
-    }
-
-    void setPhysical(bool isPhys) { _isPhysical = isPhys; }
-    bool isPhysical() { return _isPhysical; }
-    
-    // Helper to snap virtual joint to target (useful at startup)
     void forceSyncVirtual() {
-        if(!_isPhysical) {
-            current_position_count = target_count;
-            current_angle_gb = target_angle_gb;
-        }
+        if(!_isPhysical) _current_counts = _target_counts;
+    }
+    
+    // Velocity Limit (Input in Degrees/s -> Stored in Counts/s)
+    void setMaxVelocity(float deg_per_sec) {
+        _maxVelocityCounts = deg_per_sec * COUNTS_PER_DEGREE;
+        // Clamp for safety (e.g. max 100 deg/s)
+        if (_maxVelocityCounts > (100.0f * COUNTS_PER_DEGREE)) 
+            _maxVelocityCounts = 100.0f * COUNTS_PER_DEGREE;
     }
 
-  private:
-    bool _isPhysical = true; // Default true
-    unsigned long last_sim_time = 0;
-    unsigned long last_update_time = 0;
+private:
     uint8_t _id, _stepPin, _dirPin, _enaPin;
     StepGenerator* stepGen;
+    
+    bool _isPhysical = true;
     bool _dataValid = false;
-
-    float _lastAppliedVelocity = 0.0; // NEW: To prevent timer spam
-    // ADD THIS LINE:
+    unsigned long last_update_time = 0;
+    unsigned long last_physics_update = 0;
+    
     ControlState state = HOLDING;
-    
-    // ALL VARIABLES FROM ORIGINAL (EXACT COPY)
-    float target_angle_gb = 0.0;
-    float target_angle_motor = 0.0;
-    float current_angle_gb = 0.0;
-    float current_angle_motor = 0.0;
-    float target_count = 0.0;
-    float current_position_count = 0.0;
-    float position_error_counts = 0.0;
-    float current_velocity = 0.0;
-    float last_error_degrees = 0.0;
-    bool direction_cw = true;
-    bool move_active = false;
-    unsigned long settling_start_time = 0;
-    uint8_t correction_attempts = 0;
-    unsigned long move_start_time = 0;
-    unsigned long log_start_time = 0;
 
-    float _maxVelocity = 40.0; // Default start speed
-    
-    // Helper Functions (EXACT COPY)
+    // NATIVE UNITS (COUNTS)
+    float _current_counts = 0.0f;    // Float for smooth virtual sim
+    float _target_counts = 0.0f;
+    float _current_velocity_counts = 0.0f;
+    float _maxVelocityCounts = 40.0f * COUNTS_PER_DEGREE; // Default 40 deg/s
+    float _lastAppliedVelocity = 0.0f;
+
+    // ADD THESE MISSING DECLARATIONS:
+    void setDirection(bool cw);
     float countToAngle(float c);
     float angleToCount(float a);
     float getMotorAngleTotal(uint16_t motCount, int16_t motRot);
-    void setDirection(bool cw);
-    
+    void printStatus(); // If you plan to use it
 };
 
 #endif

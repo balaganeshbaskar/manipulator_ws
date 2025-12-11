@@ -33,4 +33,12 @@ extern const bool JOINT_PHYSICAL[NUM_JOINTS];
 #define MIN_BUFFER_TO_START 3       // Start motion when 3 waypoints buffered
 #define WAYPOINT_TIMEOUT 20000      // 20 seconds timeout per waypoint
 
+enum SystemMode {
+    MODE_ROS,    // Outputs @JOINT_STATE (Machine readable)
+    MODE_MANUAL  // Outputs Human-readable logs
+};
+
+extern SystemMode currentSystemMode; // Global declaration
+
+
 #endif // SYSTEM_CONFIG_H

@@ -10,3 +10,5 @@ const bool JOINT_PHYSICAL[5] = {
     false,  // Joint 4: SIMULATED
     false   // Joint 5: SIMULATED
 };
+
+SystemMode currentSystemMode = MODE_ROS; // Default to MANUAL for safety/debugging
