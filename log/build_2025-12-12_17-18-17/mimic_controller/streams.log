@@ -1,0 +1,18 @@
+[2.632s] Invoking command in '/home/bgb_6342/manipulator_ws/build/mimic_controller': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build --no-deps symlink_data
+[3.174s] running develop
+[3.523s] running egg_info
+[3.528s] writing mimic_controller.egg-info/PKG-INFO
+[3.528s] writing dependency_links to mimic_controller.egg-info/dependency_links.txt
+[3.528s] writing entry points to mimic_controller.egg-info/entry_points.txt
+[3.528s] writing requirements to mimic_controller.egg-info/requires.txt
+[3.528s] writing top-level names to mimic_controller.egg-info/top_level.txt
+[3.531s] reading manifest file 'mimic_controller.egg-info/SOURCES.txt'
+[3.535s] writing manifest file 'mimic_controller.egg-info/SOURCES.txt'
+[3.537s] running build_ext
+[3.538s] Creating /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages/mimic-controller.egg-link (link to .)
+[3.538s] Installing mimic_publisher script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+[3.545s] Installing mimic_to_moveit script to /home/bgb_6342/manipulator_ws/install/mimic_controller/lib/mimic_controller
+[3.547s] 
+[3.548s] Installed /home/bgb_6342/manipulator_ws/build/mimic_controller
+[3.548s] running symlink_data
+[3.634s] Invoked command in '/home/bgb_6342/manipulator_ws/build/mimic_controller' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build --no-deps symlink_data
