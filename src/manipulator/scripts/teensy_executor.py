@@ -52,7 +52,7 @@ class TeensyExecutor(Node):
         except Exception as e:
             self.get_logger().error(f'Failed to connect to Teensy: {e}')
             raise
-        
+
         # Joint state tracking
         self.current_positions = [0.0] * 5
         self.position_lock = threading.Lock()
@@ -109,6 +109,7 @@ class TeensyExecutor(Node):
 
     def send_all_moveit_waypoints(self, trajectory_points):
         """Send points with robust flow control"""
+
         # Clear feedback queue
         while not self.feedback_queue.empty():
             try: self.feedback_queue.get_nowait()
@@ -204,7 +205,9 @@ class TeensyExecutor(Node):
         return True
 
     def serial_read_loop(self):
-        """Read ALL serial data and log it"""
+        """Read ALL serial data and send periodic heartbeat"""
+        last_heartbeat_time = time.time()
+
         while rclpy.ok():
             try:
                 if self.serial.in_waiting:
@@ -215,6 +218,16 @@ class TeensyExecutor(Node):
                         
                         self.feedback_queue.put(line)
                         self.process_teensy_feedback(line)
+                
+                # ✅ Send heartbeat every 200ms (only during trajectory execution)
+                current_time = time.time()
+                if (current_time - last_heartbeat_time) >= 0.2:
+                    try:
+                        self.serial.write(b"HEARTBEAT\n")
+                        last_heartbeat_time = current_time
+                    except Exception as e:
+                        self.get_logger().error(f'Heartbeat send error: {e}')
+
             except Exception as e:
                 self.get_logger().error(f'Serial error: {e}')
             time.sleep(0.001)
