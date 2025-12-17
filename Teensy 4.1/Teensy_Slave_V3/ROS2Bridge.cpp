@@ -23,6 +23,7 @@ void ROS2Bridge::sendFeedback() {
         // In V3, getCurrentAngle() returns sensor data for Real joints
         // and simulated calculated data for Virtual joints.
         float pos = joints[i].getCurrentAngle();
+        pos = normalizeAngle(pos);  // ✅ Convert to ROS2 convention
         msg += String(pos, 3);
         if (i < numJoints - 1) msg += ",";
     }

@@ -15,6 +15,12 @@ private:
 
     int waypointsCompleted;
 
+    float normalizeAngle(float angle) {
+        while (angle > 180.0f) angle -= 360.0f;
+        while (angle <= -180.0f) angle += 360.0f;
+        return angle;
+    }
+
 public:
     // Constructor
     ROS2Bridge(RoboticJoint* jointsArray, const bool* physicalArray, 

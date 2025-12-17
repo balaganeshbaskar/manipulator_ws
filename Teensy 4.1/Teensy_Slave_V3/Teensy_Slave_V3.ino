@@ -18,6 +18,16 @@ RoboticJoint joints[NUM_JOINTS] = {
     RoboticJoint(5, 28, 29, 30)
 };
 
+// ============================================================
+// WATCHDOG TIMER CONSTANTS
+// ============================================================
+#define ROS2_WATCHDOG_TIMEOUT_MS 500   // Emergency stop if no ROS2 command for 500ms
+#define WATCHDOG_CHECK_INTERVAL_MS 50  // Check watchdog every 50ms
+
+unsigned long lastRos2CommandTime = 0;
+bool watchdogEnabled = false;  // Enable after first ROS2 command received
+
+
 // Virtual arrays for ROS2Bridge
 float simulated_positions[NUM_JOINTS] = {0};
 float simulated_targets[NUM_JOINTS] = {0};
@@ -47,24 +57,93 @@ void setup() {
 }
 
 void loop() {
+
+    // ============================================================
+    // 1. WATCHDOG TIMER - DETECT ROS2 DISCONNECT
+    // ============================================================
+    static unsigned long lastWatchdogCheck = 0;
+    if (millis() - lastWatchdogCheck >= WATCHDOG_CHECK_INTERVAL_MS) 
+    {
+        lastWatchdogCheck = millis();
+        
+        // ✅ Check watchdog ALWAYS when in ROS2 mode (not just during execution)
+        if (watchdogEnabled && currentSystemMode == MODE_ROS) 
+        {
+            unsigned long timeSinceLastCommand = millis() - lastRos2CommandTime;
+            
+            if (timeSinceLastCommand > ROS2_WATCHDOG_TIMEOUT_MS) 
+            {
+                // ROS2 connection lost - EMERGENCY STOP
+                Serial.println("EMERGENCY: ROS2 CONNECTION LOST");
+                Serial.print("Last heartbeat: ");
+                Serial.print(timeSinceLastCommand);
+                Serial.println("ms ago");
+                
+                // Abort any active trajectory
+                executor.abort();
+                
+                // Stop all joints
+                for (int i = 0; i < NUM_JOINTS; i++) {
+                    joints[i].stop();
+                }
+                
+                // Disable watchdog until connection restored
+                watchdogEnabled = false;
+                
+                Serial.println("SYSTEM_HALTED - Reconnect ROS2 to resume");
+            }
+        }
+    }
+    
+
     // ============================================================
     // 1. SAFETY WATCHDOG (DETECT DISCONNECTS)
     // ============================================================
     static unsigned long lastSafetyCheck = 0;
-    if (millis() - lastSafetyCheck > 100) { // Check every 100ms
+    if (millis() - lastSafetyCheck > 100) 
+    { // Check every 100ms
         lastSafetyCheck = millis();
         
-        for (int i = 0; i < NUM_JOINTS; i++) {
+        for (int i = 0; i < NUM_JOINTS; i++) 
+        {
             // Allow 500ms timeout (missed ~10 polls) before killing system
-            if (!joints[i].isSensorActive(500)) { 
-                if (executor.isRunning()) {
-                    Serial.print(F("EMERGENCY: Sensor Timeout on J"));
-                    Serial.println(i + 1);
-                    executor.abort(); // STOP ALL MOTORS
-                    ros2Bridge.resetWaypointCounter();
+            if (!joints[i].isSensorActive(500)) 
+            { 
+                // ✅ ALWAYS trigger emergency, not just during execution
+                Serial.print(F("EMERGENCY: Sensor Timeout on J"));
+                Serial.println(i + 1);
+                Serial.print(F("Last sensor data: "));
+                Serial.print(millis() - joints[i].getLastUpdateTime());
+                Serial.println(F("ms ago"));
+                
+                // Abort any active trajectory
+                executor.abort();
+                
+                // Stop ALL motors immediately
+                for (int j = 0; j < NUM_JOINTS; j++) 
+                {
+                    joints[j].stop();
                 }
+                
+                // Reset ROS2 waypoint counter
+                ros2Bridge.resetWaypointCounter();
+                
+                Serial.println(F("SYSTEM_HALTED - Check sensor connections"));
+                Serial.println(F("Send RESET to attempt recovery"));
+                
+                // ✅ Break out of loop (don't check other sensors until reset)
+                break;
             }
         }
+    }
+
+    // ============================================================
+    // 4. POLL PHYSICAL SENSORS (50Hz)
+    // ============================================================
+    static unsigned long lastPoll = 0;
+    if (millis() - lastPoll > POLL_INTERVAL_MS) {
+        pollNextSensor();
+        lastPoll = millis();
     }
 
     // ============================================================
@@ -82,14 +161,12 @@ void loop() {
     // Only update if no emergency stop is active
     executor.update();
 
-    // ============================================================
-    // 4. POLL PHYSICAL SENSORS (50Hz)
-    // ============================================================
-    static unsigned long lastPoll = 0;
-    if (millis() - lastPoll > POLL_INTERVAL_MS) {
-        pollNextSensor();
-        lastPoll = millis();
-    }
+    // ✅ NEW: Also update individual joints (for @HOME and manual moves)
+    // if (!executor.isRunning()) {
+    //     for (int i = 0; i < NUM_JOINTS; i++) {
+    //     joints[i].update();
+    //     }
+    // }
 
     // 5. SEND FEEDBACK (Dual Mode)
     if (currentSystemMode == MODE_ROS) {
@@ -130,10 +207,88 @@ void printDebugStatus() {
 
 // ================= COMMAND PARSER =================
 
-void processCommand(String cmd) {
+void processCommand(String cmd) 
+{
+
+    // ✅ NEW: Update watchdog timer on ANY command
+    lastRos2CommandTime = millis();
+    
+    if (!watchdogEnabled && currentSystemMode == MODE_ROS) 
+    {
+        watchdogEnabled = true;  // Enable watchdog after first ROS2 command
+        Serial.println("WATCHDOG_ENABLED");
+    }
+
+    // ✅ NEW: Heartbeat command (does nothing except reset watchdog)
+    if (cmd == "HEARTBEAT" || cmd == "PING") 
+    {
+        Serial.println("HEARTBEAT");
+        watchdogEnabled = true;
+        return;  // Don't process further
+    }
+
     if (cmd.startsWith("W ")) {
         executor.addWaypoint(cmd.substring(2));
     }
+
+    // ✅ SIMPLE HOME COMMAND
+    else if (cmd.startsWith("@HOME")) {
+        // Format: @HOME or @HOME J1 0.0 10.0
+        // Default: Home J1 to 0° at 10°/s
+        
+        int joint = 0; // Default J1
+        float target = 0.0; // Default 0°
+        float velocity = 3.0; // Default speed
+        
+        // Parse optional parameters
+        cmd.replace("@HOME", "");
+        cmd.trim();
+        
+        if (cmd.length() > 0) {
+        int spaceIdx1 = cmd.indexOf(' ');
+        if (spaceIdx1 > 0) {
+            String jointStr = cmd.substring(0, spaceIdx1);
+            if (jointStr.startsWith("J")) {
+            joint = jointStr.substring(1).toInt() - 1;
+            }
+            
+            int spaceIdx2 = cmd.indexOf(' ', spaceIdx1 + 1);
+            if (spaceIdx2 > 0) {
+            target = cmd.substring(spaceIdx1 + 1, spaceIdx2).toFloat();
+            velocity = cmd.substring(spaceIdx2 + 1).toFloat();
+            } else {
+            target = cmd.substring(spaceIdx1 + 1).toFloat();
+            }
+        }
+        }
+        
+        // Validate
+        if (joint < 0 || joint >= NUM_JOINTS) {
+        Serial.println("ERROR: Invalid joint");
+        return;
+        }
+        
+        // Stop trajectory if running
+        if (executor.isRunning()) {
+        executor.abort();
+        }
+        
+        // ✅ Just set target and velocity directly!
+        joints[joint].setTrajectoryMode(false);  // Disable trajectory mode
+        joints[joint].setMaxVelocity(velocity);
+        joints[joint].updateTarget(target);
+
+
+        Serial.print("HOMING: J");
+        Serial.print(joint + 1);
+        Serial.print(" -> ");
+        Serial.print(target, 1);
+        Serial.print("° @ ");
+        Serial.print(velocity, 1);
+        Serial.println("°/s");
+    }
+  
+
     else if (cmd == "@RESET") {
         executor.abort();
         ros2Bridge.resetWaypointCounter();
@@ -250,10 +405,11 @@ void printSystemStatus() {
     }
     Serial.println(F("=====================\n"));
 }
-
+// HOMING COMMAND:
+// @HOME J1 0.0 1.0
 
 // SAMPLE TEST COMMAND:
-// W 45.0,0,0,0,0,10.0,5.0,5.0,5.0,5.0,1
+// W 45.0,0,0,0,0,5.0,5.0,5.0,5.0,5.0,1
 
 // Tiny move:
 // W 1.0,0,0,0,0,5.0,5.0,5.0,5.0,5.0,1
