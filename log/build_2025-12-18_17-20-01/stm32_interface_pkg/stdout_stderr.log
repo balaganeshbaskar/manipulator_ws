@@ -1,0 +1,15 @@
+running develop
+running egg_info
+writing stm32_interface_pkg.egg-info/PKG-INFO
+writing dependency_links to stm32_interface_pkg.egg-info/dependency_links.txt
+writing entry points to stm32_interface_pkg.egg-info/entry_points.txt
+writing requirements to stm32_interface_pkg.egg-info/requires.txt
+writing top-level names to stm32_interface_pkg.egg-info/top_level.txt
+reading manifest file 'stm32_interface_pkg.egg-info/SOURCES.txt'
+writing manifest file 'stm32_interface_pkg.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32-interface-pkg.egg-link (link to .)
+Installing stm32_uart_node script to /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/stm32_interface_pkg
+
+Installed /home/bgb_6342/manipulator_ws/build/stm32_interface_pkg
+running symlink_data
