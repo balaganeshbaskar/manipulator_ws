@@ -1,6 +1,13 @@
 #ifndef SYSTEM_CONFIG_H
 #define SYSTEM_CONFIG_H
 
+// =====================================================
+// 🔧 GLOBAL DEBUG CONTROL
+// =====================================================
+// Set to true to enable verbose debugging across ALL files
+// Set to false for production (much faster execution)
+extern bool DEBUG_ENABLED;
+
 // ============================================================
 // SYSTEM-WIDE CONFIGURATION
 // ============================================================
@@ -15,7 +22,7 @@
 extern const bool JOINT_PHYSICAL[NUM_JOINTS];
 
 // ARM POSITION TOLERANCE
-#define FINAL_POSITION_THRESHOLD_DEG 0.09    // Maximum 3.0° (safety cap)
+#define FINAL_POSITION_THRESHOLD_DEG 0.1    // Maximum 3.0° (safety cap)
 
 // Serial configuration
 #define DEBUG_SERIAL_BAUD 115200
@@ -40,7 +47,7 @@ extern const bool JOINT_PHYSICAL[NUM_JOINTS];
 
 // ✅ Simple average-based threshold
 #define WAYPOINT_SWITCH_RATIO 0.4       // Switch at 40% of average waypoint spacing
-#define MIN_SWITCH_THRESHOLD_DEG 0.15   // Minimum 0.05° (safety floor)
+#define MIN_SWITCH_THRESHOLD_DEG 0.1   // Minimum 0.05° (safety floor)
 #define MAX_SWITCH_THRESHOLD_DEG 3.0    // Maximum 3.0° (safety cap)
 
 enum SystemMode {

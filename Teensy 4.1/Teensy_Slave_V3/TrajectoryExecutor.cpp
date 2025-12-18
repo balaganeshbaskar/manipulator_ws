@@ -1,4 +1,5 @@
 #include "TrajectoryExecutor.h"
+#include "SystemConfig.h"
 
 TrajectoryExecutor::TrajectoryExecutor(RoboticJoint* jointArray, int nJoints) {
   joints = jointArray;
@@ -146,7 +147,7 @@ void TrajectoryExecutor::update() {
     if (count >= MIN_BUFFER_TO_START) {
       Serial.print("TRAJECTORY_START: ");
       Serial.print(count);
-      Serial.println(" waypoints buffered");
+      Serial.println(" waypoints queued!");
       
       // ✅ Calculate per-joint thresholds from buffered waypoints
       calculateAverageSpacing();
@@ -156,15 +157,20 @@ void TrajectoryExecutor::update() {
       head = (head + 1) % WAYPOINT_BUFFER_SIZE;
       count--;
 
-      //FOR DEBUGGING
-      for(int i=0; i<numJoints; i++) 
+      if (DEBUG_ENABLED) 
       {
-        Serial.print("J: ");
-        Serial.print(i+1);
-        Serial.print(", Pos: ");
-        Serial.print(currentTarget.positions[i]);
-        Serial.print(", Vel: ");
-        Serial.println(currentTarget.velocities[i]);
+        Serial.println("---------EXECUTING---------");
+        //FOR DEBUGGING
+        for(int i=0; i<numJoints; i++) 
+        {
+          Serial.print("J: ");
+          Serial.print(i+1);
+          Serial.print(", Pos: ");
+          Serial.print(currentTarget.positions[i]);
+          Serial.print(", Vel: ");
+          Serial.println(currentTarget.velocities[i]);
+        }
+        Serial.println("---------------------------");
       }
       
       // Enable trajectory mode on all joints
@@ -192,28 +198,8 @@ void TrajectoryExecutor::update() {
   // ============================================================
   // PHASE 2: CONTINUOUS TRAJECTORY EXECUTION
   // ============================================================
-  if (isExecuting) {
-    
-    // ✅ NEW: Periodic status reporting during execution (every 500ms)
-    static unsigned long lastStatusReport = 0;
-    if (millis() - lastStatusReport > 500) {
-        Serial.println("EXECUTING: ");
-
-        //FOR DEBUGGING
-        for(int i=0; i<numJoints; i++) 
-        {
-          Serial.print("J: ");
-          Serial.print(i+1);
-          Serial.print(", Pos: ");
-          Serial.print(currentTarget.positions[i]);
-          Serial.print(", Vel: ");
-          Serial.println(currentTarget.velocities[i]);
-        }
-
-        Serial.print(count);
-        Serial.println(" waypoints remaining");
-      lastStatusReport = millis();
-    }
+  if (isExecuting) 
+  {
     
     // -----------------------------------------------------
     // STEP 1: CHECK IF NEAR TARGET (per-joint thresholds)
@@ -240,14 +226,38 @@ void TrajectoryExecutor::update() {
       head = (head + 1) % WAYPOINT_BUFFER_SIZE;
       count--;
       
-      // ✅ NEW: Report waypoint consumption
-      Serial.print("SWITCHED_WP: ");
-      Serial.print(count);
-      Serial.println(" remaining");
+      // ✅ ADD THIS LINE - Signal that buffer space is now available
+      Serial.println("WP_CONSUMED"); // DO NOT MODIFY THIS IS A IDENTIFIER FOR ROS
+
+      if (DEBUG_ENABLED) 
+      {
+        Serial.println("---------EXECUTING---------");
+        //FOR DEBUGGING
+        for(int i=0; i<numJoints; i++) 
+        {
+          Serial.print("J: ");
+          Serial.print(i+1);
+          Serial.print(", Pos: ");
+          Serial.print(currentTarget.positions[i]);
+          Serial.print(", Vel: ");
+          Serial.println(currentTarget.velocities[i]);
+        }
+        Serial.println("---------------------------");
+      }
 
       for(int i=0; i<numJoints; i++) 
       {
-        joints[i].setMaxVelocity(currentTarget.velocities[i]);
+        // joints[i].setMaxVelocity(currentTarget.velocities[i]);
+        // ✅ Check if velocity is 0 (final waypoint)
+        if (currentTarget.motionType == 2) 
+        {
+          joints[i].setMaxVelocity(2.0f);  // Use slow holding velocity
+        } 
+        else 
+        {
+          joints[i].setMaxVelocity(currentTarget.velocities[i]);
+        }
+
         joints[i].updateTarget(currentTarget.positions[i]);
 
         if (!joints[i].isPhysical()) 
@@ -277,8 +287,8 @@ void TrajectoryExecutor::update() {
     // -----------------------------------------------------
     // STEP 4: TRAJECTORY COMPLETION CHECK
     // -----------------------------------------------------
-    if (isBufferEmpty() && nearTarget) {
-
+    if (isBufferEmpty() && nearTarget)
+    {
       // ✅ NEW: Mark all joints as on final waypoint
       for(int i=0; i<numJoints; i++)
       {
@@ -286,7 +296,6 @@ void TrajectoryExecutor::update() {
       }
 
       bool allSettled = true;
-      
       for(int i=0; i<numJoints; i++)
       {
         // Use minimum threshold for final settling
@@ -316,7 +325,7 @@ void TrajectoryExecutor::update() {
         
         if (currentTarget.motionType == 2) 
         {
-          Serial.println("COMPLETE");
+          Serial.println("TRAJECTORY_COMPLETE");
         }
       }
     }

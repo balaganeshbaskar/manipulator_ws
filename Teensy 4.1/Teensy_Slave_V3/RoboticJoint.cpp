@@ -1,4 +1,5 @@
 #include "RoboticJoint.h"
+#include "SystemConfig.h"  // ✅ Include for DEBUG_ENABLED
 
 // ============================================================
 // CONSTRUCTOR & SETUP
@@ -88,24 +89,6 @@ void RoboticJoint::update() {
   if (error > 2048.0f) error -= 4096.0f;
   if (error < -2048.0f) error += 4096.0f;
   float abs_error = abs(error);
-
-
-
-  // ✅ ADD DEBUG OUTPUT (Joint 1 only)
-  if (_id == 1 && millis() % 500 < 10) {  // Print every 500ms
-      Serial.print("J1 DEBUG: Tgt=");
-      Serial.print(_target_counts * DEGREES_PER_COUNT, 2);
-      Serial.print(" Cur=");
-      Serial.print(_current_counts * DEGREES_PER_COUNT, 2);
-      Serial.print(" Err=");
-      Serial.print(error * DEGREES_PER_COUNT, 2);
-      Serial.print(" Vel=");
-      Serial.print(_current_velocity_counts, 1);
-      Serial.print(" TrajMode=");
-      Serial.print(_inTrajectoryMode);
-      Serial.print(" State=");
-      Serial.println(getStateStr());
-  }
 
   // -----------------------------------------------------
   // 3. VIRTUAL JOINT PHYSICS (Use commanded velocity)
@@ -202,7 +185,7 @@ void RoboticJoint::update() {
       commandedVelocity = _maxVelocityCounts;
       
       // Apply creep logic on final waypoint
-      if (_isFinalWaypoint && abs(commandedVelocity) < 1.0f && abs_error > DEADZONE_COUNTS) {
+      if (_isFinalWaypoint && abs(commandedVelocity) < 10.0f && abs_error > DEADZONE_COUNTS) { //if (_isFinalWaypoint && abs(commandedVelocity) < 1.0f && abs_error > DEADZONE_COUNTS) {
           float approachSpeed = abs_error * 5.0f;
           if (approachSpeed > 200.0f) approachSpeed = 200.0f;
           if (approachSpeed < 20.0f) approachSpeed = 20.0f;

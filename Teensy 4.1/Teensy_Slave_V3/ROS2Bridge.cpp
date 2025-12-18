@@ -1,4 +1,5 @@
 #include "ROS2Bridge.h"
+#include "SystemConfig.h"  // ✅ Include for DEBUG_ENABLED
 
 // ✅ Constructor matching the Header
 ROS2Bridge::ROS2Bridge(RoboticJoint* jointsArray, const bool* physicalArray, 

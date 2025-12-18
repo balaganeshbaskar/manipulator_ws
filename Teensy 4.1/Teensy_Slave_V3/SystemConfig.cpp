@@ -1,5 +1,9 @@
 #include "SystemConfig.h"
 
+// ✅ Define the global debug flag here
+// Change this to false to disable ALL debug prints
+bool DEBUG_ENABLED = false;  // Set to true when debugging needed
+
 // ============================================================
 // HYBRID MODE CONFIGURATION
 // ============================================================
