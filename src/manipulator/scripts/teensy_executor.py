@@ -110,6 +110,10 @@ class TeensyExecutor(Node):
     def send_all_moveit_waypoints(self, trajectory_points):
         """Send points with robust flow control"""
 
+        # --- ADD THIS LINE HERE ---
+        self.save_trajectory_to_file(trajectory_points)
+        # --------------------------
+
         # Clear feedback queue
         while not self.feedback_queue.empty():
             try: self.feedback_queue.get_nowait()
@@ -277,6 +281,34 @@ class TeensyExecutor(Node):
     def destroy_node(self):
         if hasattr(self, 'serial'): self.serial.close()
         super().destroy_node()
+
+
+    def save_trajectory_to_file(self, points):
+        """Saves the planned trajectory to a file for debugging."""
+
+        # Create a unique name like: traj_20251217_101500.csv
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        filename = f"traj_{timestamp}.csv"
+
+        try:
+            with open(filename, "w") as f:
+                f.write("Index, Pos_J1, Pos_J2, Pos_J3, Pos_J4, Pos_J5, Vel_J1, Vel_J2, Vel_J3, Vel_J4, Vel_J5\n")
+                for i, point in enumerate(points):
+                    # Convert to degrees for easier reading
+                    pos = [p * 180.0 / math.pi for p in point.positions[:5]]
+                    
+                    # Handle cases where velocity might be empty
+                    vel = [0.0] * 5
+                    if point.velocities and len(point.velocities) >= 5:
+                        vel = [v * 180.0 / math.pi for v in point.velocities[:5]]
+                    
+                    # Format string
+                    line = f"{i}, " + ", ".join(f"{p:.2f}" for p in pos) + ", " + ", ".join(f"{v:.2f}" for v in vel) + "\n"
+                    f.write(line)
+            self.get_logger().info(f"📝 Trajectory saved to {filename}")
+        except Exception as e:
+            self.get_logger().error(f"Failed to save trajectory: {e}")
+
 
 def main(args=None):
     rclpy.init(args=args)

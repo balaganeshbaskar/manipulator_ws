@@ -8,6 +8,10 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.descriptions import ParameterValue
 
+import yaml
+from ament_index_python.packages import get_package_share_directory
+
+
 # ADD THIS ENTIRE FUNCTION
 def validate_configuration(context, *args, **kwargs):
     """Validate that simulate and use_custom_executor are not both true"""
@@ -20,6 +24,16 @@ def validate_configuration(context, *args, **kwargs):
             "Cannot use custom executor with simulation mode.\n"
         )
     return []
+
+def load_yaml(package_name, file_path):
+    package_path = get_package_share_directory(package_name)
+    absolute_file_path = os.path.join(package_path, file_path)
+    try:
+        with open(absolute_file_path, "r") as file:
+            return yaml.safe_load(file)
+    except EnvironmentError:
+        return None
+
 
 def generate_launch_description():
     # 1. ARGUMENTS
@@ -65,9 +79,13 @@ def generate_launch_description():
     kinematics_yaml = PathJoinSubstitution(
         [FindPackageShare("moveit_config"), "config", "kinematics.yaml"]
     )
-    joint_limits_yaml = PathJoinSubstitution(
-        [FindPackageShare("moveit_config"), "config", "joint_limits.yaml"]
-    )
+
+    # Load the actual dictionary content
+    joint_limits_dict = load_yaml("moveit_config", "config/joint_limits.yaml")
+
+    # joint_limits_yaml = PathJoinSubstitution(
+    #     [FindPackageShare("moveit_config"), "config", "joint_limits.yaml"]
+    # )
     moveit_controllers_yaml = PathJoinSubstitution(
         [FindPackageShare("moveit_config"), "config", "moveit_controllers.yaml"]
     )
@@ -158,7 +176,8 @@ def generate_launch_description():
             moveit_controllers_yaml,
             chomp_planning_yaml,
             {"robot_description_kinematics": kinematics_yaml},
-            {"robot_description_planning": joint_limits_yaml},
+            # {"robot_description_planning": joint_limits_yaml},
+            {"robot_description_planning": joint_limits_dict},
 
             # Set CHOMP as the default pipeline
             {"planning_plugin": "chomp_interface/CHOMPPlanner"},
@@ -196,7 +215,8 @@ def generate_launch_description():
             robot_description,
             robot_description_semantic,
             {"robot_description_kinematics": kinematics_yaml},
-            {"robot_description_planning": joint_limits_yaml},
+            {"robot_description_planning": joint_limits_dict},
+            # {"robot_description_planning": joint_limits_yaml},
         ],
     )
 

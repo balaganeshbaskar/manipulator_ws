@@ -1,0 +1,17 @@
+[2.328s] Invoking command in '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/build --no-deps symlink_data
+[3.911s] running develop
+[4.987s] running egg_info
+[4.994s] writing stm32_interface_pkg.egg-info/PKG-INFO
+[4.994s] writing dependency_links to stm32_interface_pkg.egg-info/dependency_links.txt
+[4.994s] writing entry points to stm32_interface_pkg.egg-info/entry_points.txt
+[4.995s] writing requirements to stm32_interface_pkg.egg-info/requires.txt
+[5.000s] writing top-level names to stm32_interface_pkg.egg-info/top_level.txt
+[5.016s] reading manifest file 'stm32_interface_pkg.egg-info/SOURCES.txt'
+[5.025s] writing manifest file 'stm32_interface_pkg.egg-info/SOURCES.txt'
+[5.049s] running build_ext
+[5.050s] Creating /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages/stm32-interface-pkg.egg-link (link to .)
+[5.050s] Installing stm32_uart_node script to /home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/stm32_interface_pkg
+[5.050s] 
+[5.050s] Installed /home/bgb_6342/manipulator_ws/build/stm32_interface_pkg
+[5.050s] running symlink_data
+[5.256s] Invoked command in '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/build --no-deps symlink_data
