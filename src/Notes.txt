@@ -7,11 +7,13 @@ source install/setup.bash
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-# 1. DEFAULT: Real hardware with ros2_control
-ros2 launch manipulator bringup_real.launch.py
 
-# 2. Real hardware with custom waypoint executor
-ros2 launch manipulator bringup_real.launch.py use_custom_executor:=true
+Currently Using #1:
+# 1. Real hardware with custom waypoint executor
+ros2 launch manipulator bringup_real.launch.py use_custom_executor:=true | tee execution_log.txt
+
+# 2. DEFAULT: Real hardware with ros2_control
+ros2 launch manipulator bringup_real.launch.py
 
 # 3. Simulation mode (mock/Gazebo) with ros2_control
 ros2 launch manipulator bringup_real.launch.py simulate:=true

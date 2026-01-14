@@ -7,6 +7,7 @@ from launch.substitutions import Command, FindExecutable, LaunchConfiguration, P
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.descriptions import ParameterValue
+from moveit_configs_utils import MoveItConfigsBuilder
 
 import yaml
 from ament_index_python.packages import get_package_share_directory
@@ -81,7 +82,24 @@ def generate_launch_description():
     )
 
     # Load the actual dictionary content
-    joint_limits_dict = load_yaml("moveit_config", "config/joint_limits.yaml")
+    joint_limits_full = load_yaml("moveit_config", "config/joint_limits.yaml")
+
+    # Extract the robot_description_planning section
+    # Handle both possible structures in your YAML
+    if joint_limits_full and "/**:" in joint_limits_full:
+        # If YAML has /** wildcard structure
+        wildcard_content = joint_limits_full["/**:"]
+        if "ros__parameters" in wildcard_content:
+            joint_limits_dict = wildcard_content["ros__parameters"].get("robot_description_planning", {})
+        elif "robot_description_planning" in wildcard_content:
+            joint_limits_dict = wildcard_content["robot_description_planning"]
+        else:
+            joint_limits_dict = {}
+    else:
+        # Fallback
+        joint_limits_dict = {}
+    
+    print(f"✅ Loaded joint limits: {joint_limits_dict}")  # Debug output
 
     # joint_limits_yaml = PathJoinSubstitution(
     #     [FindPackageShare("moveit_config"), "config", "joint_limits.yaml"]

@@ -175,6 +175,15 @@ class TeensyExecutor(Node):
                     
                     elif line.startswith('@JOINT_STATE'):
                         self.publish_joint_state(line)
+                    
+                    elif 'PROGRESS:' in line:
+                        # Parse "PROGRESS: 45/129"
+                        try:
+                            progress_str = line.split('PROGRESS:')[1].strip()
+                            current, total = progress_str.split('/')
+                            self.get_logger().info(f'📊 Progress: {current}/{total} waypoints')
+                        except:
+                            pass
 
                 # ✅ Send heartbeat every 200ms (only during trajectory execution)
                 current_time = time.time()

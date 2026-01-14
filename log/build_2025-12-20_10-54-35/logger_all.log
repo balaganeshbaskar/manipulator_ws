@@ -1,0 +1,518 @@
+[2.219s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--symlink-install']
+[2.220s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=4, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x74a0559fdc90>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x74a0559fd750>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x74a0559fd750>>, mixin_verb=('build',))
+[2.845s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[2.846s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[2.847s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[2.847s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[2.847s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[2.847s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[2.847s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/bgb_6342/manipulator_ws'
+[2.847s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[2.847s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[2.847s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[2.847s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[2.847s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[2.847s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[2.847s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[2.848s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[2.848s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[2.878s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[2.878s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[2.878s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[2.879s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[2.879s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[2.879s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extensions ['ignore', 'ignore_ament_install']
+[2.879s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extension 'ignore'
+[2.879s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extension 'ignore_ament_install'
+[2.879s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extensions ['colcon_pkg']
+[2.880s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extension 'colcon_pkg'
+[2.880s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extensions ['colcon_meta']
+[2.880s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extension 'colcon_meta'
+[2.880s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extensions ['ros']
+[2.880s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extension 'ros'
+[2.881s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extensions ['cmake', 'python']
+[2.881s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extension 'cmake'
+[2.881s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extension 'python'
+[2.881s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extensions ['python_setup_py']
+[2.881s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino) by extension 'python_setup_py'
+[2.882s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extensions ['ignore', 'ignore_ament_install']
+[2.882s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extension 'ignore'
+[2.882s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extension 'ignore_ament_install'
+[2.882s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extensions ['colcon_pkg']
+[2.882s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extension 'colcon_pkg'
+[2.882s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extensions ['colcon_meta']
+[2.883s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extension 'colcon_meta'
+[2.883s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extensions ['ros']
+[2.883s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extension 'ros'
+[2.883s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extensions ['cmake', 'python']
+[2.883s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extension 'cmake'
+[2.883s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extension 'python'
+[2.883s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extensions ['python_setup_py']
+[2.883s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Module) by extension 'python_setup_py'
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extensions ['ignore', 'ignore_ament_install']
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extension 'ignore'
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extension 'ignore_ament_install'
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extensions ['colcon_pkg']
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extension 'colcon_pkg'
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extensions ['colcon_meta']
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extension 'colcon_meta'
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extensions ['ros']
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extension 'ros'
+[2.884s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extensions ['cmake', 'python']
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extension 'cmake'
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extension 'python'
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extensions ['python_setup_py']
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(Robotic_Arm_Arduino/Joint_Level_Test_Master) by extension 'python_setup_py'
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extensions ['ignore', 'ignore_ament_install']
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extension 'ignore'
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extension 'ignore_ament_install'
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extensions ['colcon_pkg']
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extension 'colcon_pkg'
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extensions ['colcon_meta']
+[2.885s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extension 'colcon_meta'
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extensions ['ros']
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extension 'ros'
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extensions ['cmake', 'python']
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extension 'cmake'
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extension 'python'
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extensions ['python_setup_py']
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(STM32) by extension 'python_setup_py'
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extensions ['ignore', 'ignore_ament_install']
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extension 'ignore'
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extension 'ignore_ament_install'
+[2.886s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extensions ['colcon_pkg']
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extension 'colcon_pkg'
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extensions ['colcon_meta']
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extension 'colcon_meta'
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extensions ['ros']
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extension 'ros'
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extensions ['cmake', 'python']
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extension 'cmake'
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extension 'python'
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extensions ['python_setup_py']
+[2.887s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1) by extension 'python_setup_py'
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extensions ['ignore', 'ignore_ament_install']
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extension 'ignore'
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extension 'ignore_ament_install'
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extensions ['colcon_pkg']
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extension 'colcon_pkg'
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extensions ['colcon_meta']
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extension 'colcon_meta'
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extensions ['ros']
+[2.888s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extension 'ros'
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extensions ['cmake', 'python']
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extension 'cmake'
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extension 'python'
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extensions ['python_setup_py']
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Controller) by extension 'python_setup_py'
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extensions ['ignore', 'ignore_ament_install']
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extension 'ignore'
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extension 'ignore_ament_install'
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extensions ['colcon_pkg']
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extension 'colcon_pkg'
+[2.889s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extensions ['colcon_meta']
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extension 'colcon_meta'
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extensions ['ros']
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extension 'ros'
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extensions ['cmake', 'python']
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extension 'cmake'
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extension 'python'
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extensions ['python_setup_py']
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(Teensy 4.1/Teensy_Slave_V3) by extension 'python_setup_py'
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[2.890s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[2.891s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[2.891s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[2.891s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[2.891s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[2.891s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[2.891s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[2.892s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extensions ['ignore', 'ignore_ament_install']
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extension 'ignore'
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extension 'ignore_ament_install'
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extensions ['colcon_pkg']
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extension 'colcon_pkg'
+[2.893s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extensions ['colcon_meta']
+[2.894s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extension 'colcon_meta'
+[2.894s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extensions ['ros']
+[2.894s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator) by extension 'ros'
+[2.899s] DEBUG:colcon.colcon_core.package_identification:Package 'src/manipulator' with type 'ros.ament_cmake' and name 'manipulator'
+[2.899s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extensions ['ignore', 'ignore_ament_install']
+[2.899s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extension 'ignore'
+[2.899s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extension 'ignore_ament_install'
+[2.899s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extensions ['colcon_pkg']
+[2.899s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extension 'colcon_pkg'
+[2.899s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extensions ['colcon_meta']
+[2.900s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extension 'colcon_meta'
+[2.900s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extensions ['ros']
+[2.902s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_hardware) by extension 'ros'
+[2.906s] DEBUG:colcon.colcon_core.package_identification:Package 'src/manipulator_hardware' with type 'ros.ament_python' and name 'manipulator_hardware'
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extensions ['ignore', 'ignore_ament_install']
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extension 'ignore'
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extension 'ignore_ament_install'
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extensions ['colcon_pkg']
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extension 'colcon_pkg'
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extensions ['colcon_meta']
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extension 'colcon_meta'
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extensions ['ros']
+[2.907s] Level 1:colcon.colcon_core.package_identification:_identify(src/manipulator_test_manager) by extension 'ros'
+[2.909s] DEBUG:colcon.colcon_core.package_identification:Package 'src/manipulator_test_manager' with type 'ros.ament_python' and name 'manipulator_test_manager'
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extensions ['ignore', 'ignore_ament_install']
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extension 'ignore'
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extension 'ignore_ament_install'
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extensions ['colcon_pkg']
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extension 'colcon_pkg'
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extensions ['colcon_meta']
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extension 'colcon_meta'
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extensions ['ros']
+[2.909s] Level 1:colcon.colcon_core.package_identification:_identify(src/mimic_controller) by extension 'ros'
+[2.910s] DEBUG:colcon.colcon_core.package_identification:Package 'src/mimic_controller' with type 'ros.ament_python' and name 'mimic_controller'
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extensions ['ignore', 'ignore_ament_install']
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extension 'ignore'
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extension 'ignore_ament_install'
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extensions ['colcon_pkg']
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extension 'colcon_pkg'
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extensions ['colcon_meta']
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extension 'colcon_meta'
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extensions ['ros']
+[2.911s] Level 1:colcon.colcon_core.package_identification:_identify(src/moveit_config) by extension 'ros'
+[2.922s] DEBUG:colcon.colcon_core.package_identification:Package 'src/moveit_config' with type 'ros.ament_cmake' and name 'moveit_config'
+[2.922s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extensions ['ignore', 'ignore_ament_install']
+[2.922s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extension 'ignore'
+[2.922s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extension 'ignore_ament_install'
+[2.922s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extensions ['colcon_pkg']
+[2.922s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extension 'colcon_pkg'
+[2.922s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extensions ['colcon_meta']
+[2.923s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extension 'colcon_meta'
+[2.923s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extensions ['ros']
+[2.923s] Level 1:colcon.colcon_core.package_identification:_identify(src/stm32_interface_pkg) by extension 'ros'
+[2.925s] DEBUG:colcon.colcon_core.package_identification:Package 'src/stm32_interface_pkg' with type 'ros.ament_python' and name 'stm32_interface_pkg'
+[2.926s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[2.926s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[2.926s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[2.926s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[2.926s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[2.998s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[2.998s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[3.007s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 365 installed packages in /opt/ros/humble
+[3.010s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[3.086s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'cmake_args' from command line to 'None'
+[3.086s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'cmake_target' from command line to 'None'
+[3.086s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[3.087s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'cmake_clean_cache' from command line to 'False'
+[3.087s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'cmake_clean_first' from command line to 'False'
+[3.087s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'cmake_force_configure' from command line to 'False'
+[3.087s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'ament_cmake_args' from command line to 'None'
+[3.087s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'catkin_cmake_args' from command line to 'None'
+[3.087s] Level 5:colcon.colcon_core.verb:set package 'manipulator' build argument 'catkin_skip_building_tests' from command line to 'False'
+[3.087s] DEBUG:colcon.colcon_core.verb:Building package 'manipulator' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/bgb_6342/manipulator_ws/build/manipulator', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/bgb_6342/manipulator_ws/install/manipulator', 'merge_install': False, 'path': '/home/bgb_6342/manipulator_ws/src/manipulator', 'symlink_install': True, 'test_result_base': None}
+[3.087s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'cmake_args' from command line to 'None'
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'cmake_target' from command line to 'None'
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'cmake_clean_cache' from command line to 'False'
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'cmake_clean_first' from command line to 'False'
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'cmake_force_configure' from command line to 'False'
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'ament_cmake_args' from command line to 'None'
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'catkin_cmake_args' from command line to 'None'
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_hardware' build argument 'catkin_skip_building_tests' from command line to 'False'
+[3.088s] DEBUG:colcon.colcon_core.verb:Building package 'manipulator_hardware' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/bgb_6342/manipulator_ws/build/manipulator_hardware', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/bgb_6342/manipulator_ws/install/manipulator_hardware', 'merge_install': False, 'path': '/home/bgb_6342/manipulator_ws/src/manipulator_hardware', 'symlink_install': True, 'test_result_base': None}
+[3.088s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'cmake_args' from command line to 'None'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'cmake_target' from command line to 'None'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'cmake_clean_cache' from command line to 'False'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'cmake_clean_first' from command line to 'False'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'cmake_force_configure' from command line to 'False'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'ament_cmake_args' from command line to 'None'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'catkin_cmake_args' from command line to 'None'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'manipulator_test_manager' build argument 'catkin_skip_building_tests' from command line to 'False'
+[3.089s] DEBUG:colcon.colcon_core.verb:Building package 'manipulator_test_manager' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager', 'merge_install': False, 'path': '/home/bgb_6342/manipulator_ws/src/manipulator_test_manager', 'symlink_install': True, 'test_result_base': None}
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'cmake_args' from command line to 'None'
+[3.089s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'cmake_target' from command line to 'None'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'cmake_clean_cache' from command line to 'False'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'cmake_clean_first' from command line to 'False'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'cmake_force_configure' from command line to 'False'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'ament_cmake_args' from command line to 'None'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'catkin_cmake_args' from command line to 'None'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'mimic_controller' build argument 'catkin_skip_building_tests' from command line to 'False'
+[3.090s] DEBUG:colcon.colcon_core.verb:Building package 'mimic_controller' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/bgb_6342/manipulator_ws/build/mimic_controller', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/bgb_6342/manipulator_ws/install/mimic_controller', 'merge_install': False, 'path': '/home/bgb_6342/manipulator_ws/src/mimic_controller', 'symlink_install': True, 'test_result_base': None}
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'cmake_args' from command line to 'None'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'cmake_target' from command line to 'None'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'cmake_clean_cache' from command line to 'False'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'cmake_clean_first' from command line to 'False'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'cmake_force_configure' from command line to 'False'
+[3.090s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'ament_cmake_args' from command line to 'None'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'catkin_cmake_args' from command line to 'None'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'stm32_interface_pkg' build argument 'catkin_skip_building_tests' from command line to 'False'
+[3.091s] DEBUG:colcon.colcon_core.verb:Building package 'stm32_interface_pkg' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg', 'merge_install': False, 'path': '/home/bgb_6342/manipulator_ws/src/stm32_interface_pkg', 'symlink_install': True, 'test_result_base': None}
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'cmake_args' from command line to 'None'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'cmake_target' from command line to 'None'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'cmake_clean_cache' from command line to 'False'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'cmake_clean_first' from command line to 'False'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'cmake_force_configure' from command line to 'False'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'ament_cmake_args' from command line to 'None'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'catkin_cmake_args' from command line to 'None'
+[3.091s] Level 5:colcon.colcon_core.verb:set package 'moveit_config' build argument 'catkin_skip_building_tests' from command line to 'False'
+[3.091s] DEBUG:colcon.colcon_core.verb:Building package 'moveit_config' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/bgb_6342/manipulator_ws/build/moveit_config', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/bgb_6342/manipulator_ws/install/moveit_config', 'merge_install': False, 'path': '/home/bgb_6342/manipulator_ws/src/moveit_config', 'symlink_install': True, 'test_result_base': None}
+[3.092s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[3.093s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[3.093s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/bgb_6342/manipulator_ws/src/manipulator' with build type 'ament_cmake'
+[3.094s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/bgb_6342/manipulator_ws/src/manipulator'
+[3.099s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[3.100s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.100s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.106s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/bgb_6342/manipulator_ws/src/manipulator_hardware' with build type 'ament_python'
+[3.107s] Level 1:colcon.colcon_core.shell:create_environment_hook('manipulator_hardware', 'ament_prefix_path')
+[3.107s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/hook/ament_prefix_path.ps1'
+[3.113s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/hook/ament_prefix_path.dsv'
+[3.115s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/hook/ament_prefix_path.sh'
+[3.121s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.121s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.126s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/bgb_6342/manipulator_ws/src/manipulator_test_manager' with build type 'ament_python'
+[3.126s] Level 1:colcon.colcon_core.shell:create_environment_hook('manipulator_test_manager', 'ament_prefix_path')
+[3.126s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/hook/ament_prefix_path.ps1'
+[3.127s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/hook/ament_prefix_path.dsv'
+[3.128s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/hook/ament_prefix_path.sh'
+[3.129s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.129s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.134s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/bgb_6342/manipulator_ws/src/mimic_controller' with build type 'ament_python'
+[3.139s] Level 1:colcon.colcon_core.shell:create_environment_hook('mimic_controller', 'ament_prefix_path')
+[3.140s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/hook/ament_prefix_path.ps1'
+[3.142s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/hook/ament_prefix_path.dsv'
+[3.143s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/hook/ament_prefix_path.sh'
+[3.144s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.145s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.167s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/manipulator -- -j4 -l4
+[3.600s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/bgb_6342/manipulator_ws/src/manipulator_hardware'
+[3.601s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.601s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.016s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/bgb_6342/manipulator_ws/src/manipulator_test_manager'
+[4.016s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[4.016s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.440s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/bgb_6342/manipulator_ws/src/mimic_controller'
+[4.440s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[4.440s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.450s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/manipulator -- -j4 -l4
+[4.470s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/manipulator
+[4.540s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(manipulator)
+[4.540s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/manipulator
+[4.561s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator' for CMake module files
+[4.562s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator' for CMake config files
+[4.563s] Level 1:colcon.colcon_core.shell:create_environment_hook('manipulator', 'cmake_prefix_path')
+[4.563s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/hook/cmake_prefix_path.ps1'
+[4.564s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/hook/cmake_prefix_path.dsv'
+[4.564s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/hook/cmake_prefix_path.sh'
+[4.569s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/lib'
+[4.570s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/bin'
+[4.571s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/lib/pkgconfig/manipulator.pc'
+[4.571s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/lib/python3.10/site-packages'
+[4.572s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/bin'
+[4.573s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.ps1'
+[4.575s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.dsv'
+[4.576s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.sh'
+[4.578s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.bash'
+[4.580s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.zsh'
+[4.582s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/bgb_6342/manipulator_ws/install/manipulator/share/colcon-core/packages/manipulator)
+[4.583s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(manipulator)
+[4.584s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator' for CMake module files
+[4.586s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator' for CMake config files
+[4.587s] Level 1:colcon.colcon_core.shell:create_environment_hook('manipulator', 'cmake_prefix_path')
+[4.588s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/hook/cmake_prefix_path.ps1'
+[4.589s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/hook/cmake_prefix_path.dsv'
+[4.591s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/hook/cmake_prefix_path.sh'
+[4.593s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/lib'
+[4.593s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/bin'
+[4.594s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/lib/pkgconfig/manipulator.pc'
+[4.594s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/lib/python3.10/site-packages'
+[4.594s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator/bin'
+[4.595s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.ps1'
+[4.595s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.dsv'
+[4.596s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.sh'
+[4.597s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.bash'
+[4.598s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator/share/manipulator/package.zsh'
+[4.599s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/bgb_6342/manipulator_ws/install/manipulator/share/colcon-core/packages/manipulator)
+[4.600s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/bgb_6342/manipulator_ws/src/stm32_interface_pkg' with build type 'ament_python'
+[4.603s] Level 1:colcon.colcon_core.shell:create_environment_hook('stm32_interface_pkg', 'ament_prefix_path')
+[4.603s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/hook/ament_prefix_path.ps1'
+[4.606s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/hook/ament_prefix_path.dsv'
+[4.608s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/hook/ament_prefix_path.sh'
+[4.610s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[4.610s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[5.159s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/bgb_6342/manipulator_ws/src/stm32_interface_pkg'
+[5.159s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[5.160s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[5.511s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator_hardware': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_hardware/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build --no-deps symlink_data
+[5.519s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/bgb_6342/manipulator_ws/build/mimic_controller': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build --no-deps symlink_data
+[5.536s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build --no-deps symlink_data
+[5.995s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/build --no-deps symlink_data
+[6.687s] Level 1:colcon.colcon_core.shell:create_environment_hook('manipulator_hardware', 'pythonpath_develop')
+[6.687s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/build/manipulator_hardware/share/manipulator_hardware/hook/pythonpath_develop.ps1'
+[6.688s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/build/manipulator_hardware/share/manipulator_hardware/hook/pythonpath_develop.dsv'
+[6.689s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/build/manipulator_hardware/share/manipulator_hardware/hook/pythonpath_develop.sh'
+[6.690s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_hardware' for CMake module files
+[6.691s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_hardware' for CMake config files
+[6.692s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib'
+[6.692s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/bin'
+[6.692s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/pkgconfig/manipulator_hardware.pc'
+[6.692s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages'
+[6.692s] Level 1:colcon.colcon_core.shell:create_environment_hook('manipulator_hardware', 'pythonpath')
+[6.693s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/hook/pythonpath.ps1'
+[6.694s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator_hardware' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_hardware/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_hardware/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_hardware/build --no-deps symlink_data
+[6.697s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/hook/pythonpath.dsv'
+[6.698s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/hook/pythonpath.sh'
+[6.698s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/bin'
+[6.699s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(manipulator_hardware)
+[6.700s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/package.ps1'
+[6.702s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/package.dsv'
+[6.702s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/package.sh'
+[6.703s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/package.bash'
+[6.704s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/manipulator_hardware/package.zsh'
+[6.705s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/bgb_6342/manipulator_ws/install/manipulator_hardware/share/colcon-core/packages/manipulator_hardware)
+[6.706s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/bgb_6342/manipulator_ws/src/moveit_config' with build type 'ament_cmake'
+[6.706s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/bgb_6342/manipulator_ws/src/moveit_config'
+[6.707s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[6.707s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[6.742s] Level 1:colcon.colcon_core.shell:create_environment_hook('mimic_controller', 'pythonpath_develop')
+[6.742s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/build/mimic_controller/share/mimic_controller/hook/pythonpath_develop.ps1'
+[6.743s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/build/mimic_controller/share/mimic_controller/hook/pythonpath_develop.dsv'
+[6.744s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/build/mimic_controller/share/mimic_controller/hook/pythonpath_develop.sh'
+[6.744s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/mimic_controller' for CMake module files
+[6.755s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/bgb_6342/manipulator_ws/build/mimic_controller' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/mimic_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/mimic_controller/build --no-deps symlink_data
+[6.758s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/mimic_controller' for CMake config files
+[6.761s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/mimic_controller/lib'
+[6.761s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/mimic_controller/bin'
+[6.761s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/pkgconfig/mimic_controller.pc'
+[6.762s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/mimic_controller/lib/python3.10/site-packages'
+[6.762s] Level 1:colcon.colcon_core.shell:create_environment_hook('mimic_controller', 'pythonpath')
+[6.762s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/hook/pythonpath.ps1'
+[6.763s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/hook/pythonpath.dsv'
+[6.764s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/hook/pythonpath.sh'
+[6.770s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/mimic_controller/bin'
+[6.770s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(mimic_controller)
+[6.771s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/package.ps1'
+[6.773s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/package.dsv'
+[6.774s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/package.sh'
+[6.775s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/package.bash'
+[6.776s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/mimic_controller/share/mimic_controller/package.zsh'
+[6.778s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/bgb_6342/manipulator_ws/install/mimic_controller/share/colcon-core/packages/mimic_controller)
+[6.840s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/bgb_6342/manipulator_ws/build/moveit_config': AMENT_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/moveit_config -- -j4 -l4
+[6.841s] Level 1:colcon.colcon_core.shell:create_environment_hook('manipulator_test_manager', 'pythonpath_develop')
+[6.842s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/share/manipulator_test_manager/hook/pythonpath_develop.ps1'
+[6.843s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/share/manipulator_test_manager/hook/pythonpath_develop.dsv'
+[6.843s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/share/manipulator_test_manager/hook/pythonpath_develop.sh'
+[6.845s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/bgb_6342/manipulator_ws/build/manipulator_test_manager' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/manipulator_test_manager/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/manipulator_test_manager/build --no-deps symlink_data
+[6.846s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager' for CMake module files
+[6.846s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager' for CMake config files
+[6.847s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib'
+[6.848s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/bin'
+[6.848s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/pkgconfig/manipulator_test_manager.pc'
+[6.848s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/lib/python3.10/site-packages'
+[6.848s] Level 1:colcon.colcon_core.shell:create_environment_hook('manipulator_test_manager', 'pythonpath')
+[6.848s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/hook/pythonpath.ps1'
+[6.849s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/hook/pythonpath.dsv'
+[6.850s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/hook/pythonpath.sh'
+[6.851s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/bin'
+[6.851s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(manipulator_test_manager)
+[6.856s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/package.ps1'
+[6.860s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/package.dsv'
+[6.861s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/package.sh'
+[6.862s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/package.bash'
+[6.863s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/manipulator_test_manager/package.zsh'
+[6.863s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/bgb_6342/manipulator_ws/install/manipulator_test_manager/share/colcon-core/packages/manipulator_test_manager)
+[6.946s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/bgb_6342/manipulator_ws/build/moveit_config' returned '0': AMENT_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:/opt/ros/humble /usr/bin/cmake --build /home/bgb_6342/manipulator_ws/build/moveit_config -- -j4 -l4
+[6.951s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/bgb_6342/manipulator_ws/build/moveit_config': AMENT_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/moveit_config
+[7.003s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(moveit_config)
+[7.004s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config' for CMake module files
+[7.005s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config' for CMake config files
+[7.005s] Level 1:colcon.colcon_core.shell:create_environment_hook('moveit_config', 'cmake_prefix_path')
+[7.006s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/hook/cmake_prefix_path.ps1'
+[7.007s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/hook/cmake_prefix_path.dsv'
+[7.007s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/hook/cmake_prefix_path.sh'
+[7.009s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config/bin'
+[7.010s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/bgb_6342/manipulator_ws/build/moveit_config' returned '0': AMENT_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/bgb_6342/manipulator_ws/install/manipulator:/opt/ros/humble /usr/bin/cmake --install /home/bgb_6342/manipulator_ws/build/moveit_config
+[7.010s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config/lib/pkgconfig/moveit_config.pc'
+[7.010s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config/lib/python3.10/site-packages'
+[7.011s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config/bin'
+[7.011s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.ps1'
+[7.012s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.dsv'
+[7.013s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.sh'
+[7.013s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.bash'
+[7.014s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.zsh'
+[7.014s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/bgb_6342/manipulator_ws/install/moveit_config/share/colcon-core/packages/moveit_config)
+[7.015s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(moveit_config)
+[7.016s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config' for CMake module files
+[7.016s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config' for CMake config files
+[7.017s] Level 1:colcon.colcon_core.shell:create_environment_hook('moveit_config', 'cmake_prefix_path')
+[7.017s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/hook/cmake_prefix_path.ps1'
+[7.018s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/hook/cmake_prefix_path.dsv'
+[7.019s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/hook/cmake_prefix_path.sh'
+[7.020s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config/bin'
+[7.020s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config/lib/pkgconfig/moveit_config.pc'
+[7.021s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config/lib/python3.10/site-packages'
+[7.021s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/moveit_config/bin'
+[7.021s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.ps1'
+[7.023s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.dsv'
+[7.024s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.sh'
+[7.025s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.bash'
+[7.027s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/moveit_config/share/moveit_config/package.zsh'
+[7.028s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/bgb_6342/manipulator_ws/install/moveit_config/share/colcon-core/packages/moveit_config)
+[7.060s] Level 1:colcon.colcon_core.shell:create_environment_hook('stm32_interface_pkg', 'pythonpath_develop')
+[7.061s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/share/stm32_interface_pkg/hook/pythonpath_develop.ps1'
+[7.062s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg' returned '0': PYTHONPATH=/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/build --no-deps symlink_data
+[7.063s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/share/stm32_interface_pkg/hook/pythonpath_develop.dsv'
+[7.064s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/build/stm32_interface_pkg/share/stm32_interface_pkg/hook/pythonpath_develop.sh'
+[7.065s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg' for CMake module files
+[7.067s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg' for CMake config files
+[7.068s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib'
+[7.068s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/bin'
+[7.069s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/pkgconfig/stm32_interface_pkg.pc'
+[7.069s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/lib/python3.10/site-packages'
+[7.069s] Level 1:colcon.colcon_core.shell:create_environment_hook('stm32_interface_pkg', 'pythonpath')
+[7.069s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/hook/pythonpath.ps1'
+[7.070s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/hook/pythonpath.dsv'
+[7.071s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/hook/pythonpath.sh'
+[7.072s] Level 1:colcon.colcon_core.environment:checking '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/bin'
+[7.072s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(stm32_interface_pkg)
+[7.072s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/package.ps1'
+[7.073s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/package.dsv'
+[7.074s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/package.sh'
+[7.075s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/package.bash'
+[7.075s] INFO:colcon.colcon_core.shell:Creating package script '/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/stm32_interface_pkg/package.zsh'
+[7.076s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/bgb_6342/manipulator_ws/install/stm32_interface_pkg/share/colcon-core/packages/stm32_interface_pkg)
+[7.076s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[7.077s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[7.077s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[7.078s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[7.130s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[7.130s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[7.131s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[7.131s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[7.133s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.Notifications was not provided by any .service files
+[7.133s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[7.133s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/bgb_6342/manipulator_ws/install/local_setup.ps1'
+[7.135s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/bgb_6342/manipulator_ws/install/_local_setup_util_ps1.py'
+[7.138s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/bgb_6342/manipulator_ws/install/setup.ps1'
+[7.139s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/bgb_6342/manipulator_ws/install/local_setup.sh'
+[7.140s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/bgb_6342/manipulator_ws/install/_local_setup_util_sh.py'
+[7.141s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/bgb_6342/manipulator_ws/install/setup.sh'
+[7.143s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/bgb_6342/manipulator_ws/install/local_setup.bash'
+[7.145s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/bgb_6342/manipulator_ws/install/setup.bash'
+[7.147s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/bgb_6342/manipulator_ws/install/local_setup.zsh'
+[7.148s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/bgb_6342/manipulator_ws/install/setup.zsh'
